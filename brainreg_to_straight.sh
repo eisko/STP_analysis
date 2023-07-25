@@ -4,10 +4,11 @@
 
 # make sure to `conda activate brainglobe` before running
 
-straight_brain="MMus_220308"
+straight_brain="STeg_220429"
 
 # Replace 'your_csv_file.csv' with the actual filename of your CSV file
 csv_file="/mnt/labNAS/Emily/STP_for_MAPseq/processed_data/file_path.csv"
+orientation='ars'
 out_folder="/mnt/labNAS/Emily/STP_for_MAPseq/3_brainreg_output/${straight_brain}_aligned"
 
 # Check if the CSV file exists
@@ -46,6 +47,6 @@ while IFS= read -r line; do
 
   # run brainreg
   brainreg $file_path "${out_folder}/${name}_brainreg_${straight_brain}" \
-  -v 50 20 20 --orientation asl --atlas allen_mouse_50um
+  -v 50 20 20 --orientation $orientation --atlas allen_mouse_50um
 
 done < $csv_file
