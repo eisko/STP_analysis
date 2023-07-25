@@ -4,7 +4,7 @@
 
 # make sure to `conda activate brainglobe` before running
 
-straight_brain="STeg_220429"
+straight_brain="MMus_220303"
 
 # Replace 'your_csv_file.csv' with the actual filename of your CSV file
 csv_file="/mnt/labNAS/Emily/STP_for_MAPseq/3_brainreg_output/brainreg_inpaths.csv"
