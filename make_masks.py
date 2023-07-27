@@ -27,7 +27,15 @@ areas = ["grey", "CTX", "TH", "STR", "CP", "P", "MB", "PAG", "HY", "CNU", "TEa",
 for i in range(len(atlases)):
     #loop through areas:
     for j in range(len(areas)):
+        st_start = time()
         print("working on", atlas_labels[i], areas[j])
         area_mask = make_mask(areas[j], atlases[i])
         with open(out_path+atlas_labels[i]+"_"+areas[j]+".npy", "wb") as f:
-            np.save(f, area_mask, allow_pickle=False)   
+            np.save(f, area_mask, allow_pickle=False)
+        st_end = time()
+        print(atlas_labels[i], areas[j], "took", st_end-st_start, "seconds")
+        print("\n")
+        
+end = time()
+
+print("script took", end-start, "seconds")
