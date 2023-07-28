@@ -110,33 +110,26 @@ def make_boundaries(areas_list, mask_list, mask_list_order=areas, roi=None, slic
     masks = [m[start:end] for m in masks]
 
     # 2. max project all masks after setting bounds
-    # using max or sum function?
-    # if type(roi_mask) == int:
-    #     masks_max = masks_roi
-    # else:
-    #     masks_max = [m.max(axis=0) for m in masks_roi]
+    masks_max = [m.max(axis=0) for m in masks]
 
     # 3. add masks on top of each other -> can't do this or will also get boundaries of intersections of masks
     # 3. instead, 
     #   3a) set each mask as diff number in order specified in areas_list
+    masks_id = [masks_max[i]*(i+1) for i in range(len(masks_max))]
     #   3b) take maximum of all masks
+    mask_final = masks_id[0] # initailize
+    for i in range(1,len(masks_id)):
+        mask_final = np.maximum(mask_final, masks_id[i]) # get maximum based on next mask
 
+    # could return(mask_final) to visualize w/ matplotlib, where area labelled by color
+    # return(mask_final)
 
     # 4. find boundaries w/ skimage?
+    boundaries = find_boundaries(mask_final.astype(int), mode=boundary_mode).astype(
+        np.int8, copy=False)
 
     # 5. convert image to 0,1*scaling_factor???
-
-    # ????
-    masks_max_adj = [np.where(masks_max[i] == 1,i+1,0) for i in range(len(masks_max))]
-
-    slice_mask = masks_max_adj[0] # initailize
-    for i in range(1,len(mask_list)):
-        slice_mask = np.maximum(slice_mask, masks_max_adj[i]) # add masks on top
-
-    slice_boundaries = find_boundaries(slice_mask.astype(int), mode=boundary_mode).astype(
-        np.int8, copy=False)
-    
-    slice_bind = np.where(slice_boundaries > 0, slice_boundaries*scaling_factor, 0)
+    boundaries_scaled = boundaries * scaling_factor
 
 
-    return slice_mask, slice_bind
+    return(boundaries_scaled)
