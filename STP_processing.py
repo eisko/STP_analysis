@@ -5,7 +5,12 @@ import pandas as pd
 import numpy as np
 # using skimage
 from skimage import io # import tiff file as ndarray
+from skimage.segmentation import find_boundaries # for generating boundaries
 import os
+
+# for some default inputs:
+areas = ["grey", "CTX", "TH", "STR", "CP", "P", "MB", "PAG", "HY", "CNU", "TEa", "ECT", "VISC", "AI", "GU"]
+
 
 def make_mask(roi, atlas_in):
     '''
@@ -57,3 +62,81 @@ def make_mask(roi, atlas_in):
             mask_out = np.add(mask_out, mask)
 
         return(mask_out)
+    
+def make_boundaries(areas_list, mask_list, mask_list_order=areas, roi=None, slice=None, scaling_factor=1000, boundary_mode="thick"):
+    """_summary_
+
+    Args:
+        areas_list (list): List of strings of areas in order to include to draw boundaries
+        mask_list (list): List of all masks to draw from to make boundaries.
+        mask_list_order (list, optional): List of strings of corresponding area labels for mask in mask_list
+                                        Defaults to areas
+        roi (int, optional): used to determine bounds for max slices. Defaults to None.
+        slice (int, optional): Set to slice index if want to return 1 slice, or slice of slices. Defaults to None.
+        scaling_factor (int, optional): how much to scale the final boundary value (i.e. intensity) to make visible when plotting.
+                                Defaults to 1000
+        boudnary_mode (str, optional): mode used to make boundaries, inherited from skimage.segmentation.find_boudnaries
+                            Defaults to "thick"
+
+    Returns:
+        _type_: _description_
+    """
+    # 0.
+    # create masks, which is list containing on masks to be included in output
+    masks = [mask_list[mask_list_order.index(areas_list[i])] for i in range(len(areas_list))]
+
+    # 1. determine slices to return
+    # if roi == int, roi==slice, slice==true:
+    # output idx = slice bounds?
+    if slice:
+        if len(slice)==1:
+            start = slice
+            end = slice + 1
+        elif len(slice)==2:
+             start = slice[0]
+             end = slice[1]
+    elif roi:
+            # get start/end of roi
+            roi_mask = mask_list[mask_list_order.index(roi)]
+            roi_idx = roi_mask.sum(axis=1).sum(axis=1) > 0
+            slices_n = np.array(range(roi_idx.shape[0]))
+            start = slices_n[roi_idx].min()
+            end = slices_n[roi_idx].max()
+    else:
+        start = 0
+        end = 201
+
+    # set bounds for every mask
+    masks = [m[start:end] for m in masks]
+
+    # 2. max project all masks after setting bounds
+    # using max or sum function?
+    # if type(roi_mask) == int:
+    #     masks_max = masks_roi
+    # else:
+    #     masks_max = [m.max(axis=0) for m in masks_roi]
+
+    # 3. add masks on top of each other -> can't do this or will also get boundaries of intersections of masks
+    # 3. instead, 
+    #   3a) set each mask as diff number in order specified in areas_list
+    #   3b) take maximum of all masks
+
+
+    # 4. find boundaries w/ skimage?
+
+    # 5. convert image to 0,1*scaling_factor???
+
+    # ????
+    masks_max_adj = [np.where(masks_max[i] == 1,i+1,0) for i in range(len(masks_max))]
+
+    slice_mask = masks_max_adj[0] # initailize
+    for i in range(1,len(mask_list)):
+        slice_mask = np.maximum(slice_mask, masks_max_adj[i]) # add masks on top
+
+    slice_boundaries = find_boundaries(slice_mask.astype(int), mode=boundary_mode).astype(
+        np.int8, copy=False)
+    
+    slice_bind = np.where(slice_boundaries > 0, slice_boundaries*scaling_factor, 0)
+
+
+    return slice_mask, slice_bind
