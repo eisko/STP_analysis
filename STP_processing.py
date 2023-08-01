@@ -7,6 +7,8 @@ import numpy as np
 from skimage import io # import tiff file as ndarray
 from skimage.segmentation import find_boundaries # for generating boundaries
 import os
+from scipy.ndimage import gaussian_filter # for applying gaussian filter for density plots
+
 
 # for some default inputs:
 areas = ["grey", "CTX", "TH", "STR", "CP", "P", "MB", "PAG", "HY", "CNU", "TEa", "ECT", "VISC", "AI", "GU"]
@@ -133,3 +135,4 @@ def make_boundaries(areas_list, mask_list, mask_list_order=areas, roi=None, slic
 
 
     return(boundaries_scaled)
+

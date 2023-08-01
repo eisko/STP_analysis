@@ -20,7 +20,7 @@ atlases = [steg_reg_atlas, mmus_reg_atlas]
 atlas_labels = ["STeg_220429", "MMus_220303"]
 
 # areas to generate masks for
-areas = ["grey", "CTX", "TH", "STR", "CP", "P", "MB", "PAG", "HY", "CNU", "TEa", "ECT", "VISC", "AI", "GU"]
+areas = ["grey", "CTX", "TH", "STR", "CP", "P", "MB", "PAG", "SCm", "HY", "CNU", "TEa", "ECT", "VISC", "AI", "GU"]
 
 
 # loop through atlases
