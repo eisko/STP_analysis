@@ -4,7 +4,8 @@ import seaborn as sns
 from STP_processing import *
 from colormaps import *
 
-def slice_to_contour(stp_image, mask, slice_range=None, slice=None, output="contour", gs=3, ar=1, cmap=green_cmp):
+def slice_to_contour(stp_image, mask, slice_range=None, slice=None, output="contour", gs=3, ar=1, cmap=green_cmp,
+                     alpha=0.75):
     """_summary_
 
     Args:
@@ -41,7 +42,7 @@ def slice_to_contour(stp_image, mask, slice_range=None, slice=None, output="cont
         return(blur)
     
     # else return controur plot
-    contour = plt.contour(blur, cmap=cmap)
+    contour = plt.contour(blur, cmap=cmap, alpha=alpha)
     # ax.set_aspect(ar)
     # ax.axis('off')
 
