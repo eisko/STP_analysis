@@ -8,10 +8,11 @@ from skimage import io # import tiff file as ndarray
 from skimage.segmentation import find_boundaries # for generating boundaries
 import os
 from scipy.ndimage import gaussian_filter # for applying gaussian filter for density plots
+# from make_masks import areas
 
+# areas to generate masks for
+areas = ["grey", "CTX", "TH", "STR", "CP", "P", "MB", "PAG", "SCm", "HY", "CNU", "TEa", "ECT", "VISC", "AI", "GU"]
 
-# for some default inputs:
-areas = ["grey", "CTX", "TH", "STR", "CP", "P", "MB", "PAG", "HY", "CNU", "TEa", "ECT", "VISC", "AI", "GU"]
 
 
 def make_mask(roi, atlas_in):
@@ -65,11 +66,11 @@ def make_mask(roi, atlas_in):
 
         return(mask_out)
     
-def make_boundaries(areas_list, mask_list, mask_list_order=areas, roi=None, slice=None, scaling_factor=1000, boundary_mode="thick"):
+def make_boundaries(plot_areas, mask_list, mask_list_order=areas, roi=None, slice=None, scaling_factor=1000, boundary_mode="thick"):
     """_summary_
 
     Args:
-        areas_list (list): List of strings of areas in order to include to draw boundaries
+        plot_areas (list): List of strings of areas in order to include to draw boundaries
         mask_list (list): List of all masks to draw from to make boundaries.
         mask_list_order (list, optional): List of strings of corresponding area labels for mask in mask_list
                                         Defaults to areas
@@ -85,7 +86,7 @@ def make_boundaries(areas_list, mask_list, mask_list_order=areas, roi=None, slic
     """
     # 0.
     # create masks, which is list containing on masks to be included in output
-    masks = [mask_list[mask_list_order.index(areas_list[i])] for i in range(len(areas_list))]
+    masks = [mask_list[mask_list_order.index(plot_areas[i])] for i in range(len(plot_areas))]
 
     # 1. determine slices to return
     # if roi == int, roi==slice, slice==true:

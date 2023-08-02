@@ -7,6 +7,8 @@ from time import time
 
 start = time()
 
+
+
 # for acadia!
 in_path = "/mnt/labNAS/Emily/STP_for_MAPseq/4_python_output/input_tifs/"
 out_path = "/mnt/labNAS/Emily/STP_for_MAPseq/4_python_output/input_tifs/masks/"
