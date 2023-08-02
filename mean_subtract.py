@@ -8,12 +8,13 @@ import tifffile as tf
 info = pd.read_csv("/Volumes/Data/Emily/STP_for_MAPseq/3_brainreg_output/aligned_file_paths.csv")
 
 align_brain = info.loc[0,'align_to']
-out_path = "/Volumes/Data/Emily/STP_for_MAPseq/4_python_output/input_tifs/"+align_brain+"/"
+out_path = "/Volumes/Data/Emily/STP_for_MAPseq/4_python_output/input_tifs/norm_subtracted/"+align_brain+"_aligned/"
 
 
 n_files = info.shape[0]
 
 for i in range(n_files):
+    print('working on', info.loc[i, "brain"])
     # read in file
     im = tf.imread(info.loc[i, "path"])
     # subtract mean value
