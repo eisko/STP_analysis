@@ -7,7 +7,6 @@ import numpy as np
 from skimage import io # import tiff file as ndarray
 from skimage.segmentation import find_boundaries # for generating boundaries
 import os
-from scipy.ndimage import gaussian_filter # for applying gaussian filter for density plots
 # from make_masks import areas
 
 # areas to generate masks for

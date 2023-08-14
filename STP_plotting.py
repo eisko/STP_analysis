@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from STP_processing import *
 from colormaps import *
+from scipy.ndimage import gaussian_filter # for applying gaussian filter for density plots
 # from make_masks import areas
 # areas to generate masks for
 areas = ["grey", "CTX", "TH", "STR", "CP", "P", "MB", "PAG", "SCm", "HY", "CNU", "TEa", "ECT", "VISC", "AI", "GU"]
