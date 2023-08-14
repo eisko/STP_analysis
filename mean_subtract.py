@@ -16,6 +16,7 @@ n_files = info.shape[0]
 for i in range(n_files):
     print('working on', info.loc[i, "brain"])
     # read in file
+    print(info.loc[i, "path"])
     im = tf.imread(info.loc[i, "path"])
     # subtract mean value
     im_sub = im - info.loc[i, "mean_subtract"]
@@ -24,6 +25,8 @@ for i in range(n_files):
     im_sub[im_sub > 60000] = 0
 
     # save as norm_subtracted files
-    tf.imwrite(out_path+info.loc[0, 'brain']+'_aligned_to_'+info.loc[0,'align_to']+"_norm_subtracted.tif", im, 
+    print(out_path+info.loc[i, 'brain']+'_aligned_to_'+info.loc[0,'align_to']+"_norm_subtracted.tif")
+    tf.imwrite(out_path+info.loc[i, 'brain']+'_aligned_to_'+info.loc[0,'align_to']+"_norm_subtracted.tif", im, 
                imagej=True)
+    print("\n")
 
