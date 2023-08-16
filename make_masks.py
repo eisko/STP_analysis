@@ -63,6 +63,12 @@ for i in range(len(atlases)):
             amy = np.add(bma_bla, la)
             amy[amy>0] = 1
             area_mask = amy
+        elif areas[j] == "HY":
+            hy = make_mask("HY", atlases[i])
+            zi = make_mask("ZI", atlases[i])
+            hy = np.subtract(hy, zi)
+            hy[hy<1] = 0
+            area_mask=hy
         elif areas[j] == "BS":
             grn = make_mask("GRN", atlases[i])
             irn = make_mask("IRN", atlases[i])
