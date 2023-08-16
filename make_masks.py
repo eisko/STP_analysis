@@ -79,6 +79,9 @@ for i in range(len(atlases)):
             area_mask = make_mask(areas[j], atlases[i])
 
 
+        # convert area_mask type to boolean to reduce size
+        area_mask = area_mask.astype("bool")
+
         with open(out_path+atlas_labels[i]+"_"+areas[j]+".npy", "wb") as f:
             np.save(f, area_mask, allow_pickle=False)
 
