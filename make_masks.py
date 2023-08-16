@@ -15,14 +15,19 @@ out_path = "/mnt/labNAS/Emily/STP_for_MAPseq/4_python_output/input_tifs/masks/"
 
 # load atlases
 steg_reg_atlas = io.imread(in_path+"Steg_220429_registered_atlas_RESIZED.tif", plugin="tifffile")
-
 mmus_reg_atlas = io.imread(in_path+"MMus_220303_registered_atlas_RESIZED.tif", plugin="tifffile")
 
+# load hemispheres
+steg_reg_hemi = io.imread(in_path+"Steg_220429_registered_hemispheres_RESIZED.tif", plugin="tifffile")
+mmus_reg_hemi = io.imread(in_path+"MMus_220303_registered_hemispheres_RESIZED.tif", plugin="tifffile")
+
+
 atlases = [steg_reg_atlas, mmus_reg_atlas]
+hemis = [steg_reg_hemi, mmus_reg_hemi]
 atlas_labels = ["STeg_220429", "MMus_220303"]
 
 # areas to generate masks for
-areas = ["grey", "CTX", "TH", "STR", "CP", "P", "MB", "PAG", "SCm", "HY", "CNU", "TEa", "ECT", "VISC", "AI", "GU"]
+areas = ["grey", "CTX", "OMCc", "aud","TH", "STR", "CP", "AMY", "P", "MB", "PAG", "SCm", "HY", "CNU", "TEa", "ECT", "VISC", "AI", "GU", "BS"]
 
 
 # loop through atlases
@@ -31,13 +36,52 @@ for i in range(len(atlases)):
     for j in range(len(areas)):
         st_start = time()
         print("working on", atlas_labels[i], areas[j])
-        area_mask = make_mask(areas[j], atlases[i])
+
+        # define special cases
+        if areas[j] == "OMCc":
+            mos = make_mask("MOs", atlases[i])
+            mop = make_mask("MOp", atlases[i])
+            left_hemi = hemis[i]==2
+            omc = np.add(mos,mop)
+            omcc = np.multiply(omc, left_hemi)
+            omcc[omcc>0] = 1
+            area_mask = omcc
+        elif areas[j] == "aud":
+            tea = make_mask("TEa", atlases[i])
+            visc = make_mask("VISC", atlases[i])
+            ect = make_mask("ECT", atlases[i])
+            tea_visc = np.add(tea, visc)
+            aud = np.add(tea_visc, ect)
+            aud[aud>0] = 1
+            area_mask = aud
+        elif areas[j] == "AMY":
+            bma = make_mask("BMA", atlases[i])
+            bla = make_mask("BLA", atlases[i])
+            la = make_mask("LA", atlases[i])
+            bma_bla = np.add(bma, bla)
+            amy = np.add(bma_bla, la)
+            amy[amy>0] = 1
+            area_mask = amy
+        elif areas[j] == "BS":
+            grn = make_mask("GRN", atlases[i])
+            irn = make_mask("IRN", atlases[i])
+            bs = np.add(grn,irn)
+            bs[bs>0] = 1
+            area_mask = bs
+        else:
+            area_mask = make_mask(areas[j], atlases[i])
+
+
         with open(out_path+atlas_labels[i]+"_"+areas[j]+".npy", "wb") as f:
             np.save(f, area_mask, allow_pickle=False)
+
+
         st_end = time()
         print(atlas_labels[i], areas[j], "took", st_end-st_start, "seconds")
         print("\n")
         
+
 end = time()
+
 
 print("script took", end-start, "seconds")
