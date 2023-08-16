@@ -104,3 +104,27 @@ def plot_contour(omc_image, acc_image, mask_list, masks_to_plot, roi,
     plt.imshow(outline, cmap=sp_cmp, aspect=ar)
 
     return(fig)
+
+def dot_bar_plot(df, title="", xaxis="Area", yaxis="Integrated Fluorescence", hueaxis="Species",
+                 errorbar="se"):
+    """
+    Function to take pandas dataframe and plot individual values and mean/sem values
+    Intent to use for plotting nodes by frequency (in fraction of neurons)
+
+    Args:
+        df (pandas.core.frame.DataFrame): pandas dataframe where rows are nodes and columns are:
+         'Node Degreee', 'Normalized Frequency', 'Species', and 'mouse'
+         - See output of df_to_nodes
+        title (str): plot title
+    """
+    fig = plt.subplot()
+    sns.stripplot(df, x=xaxis, y=yaxis, hue=hueaxis, dodge=True, jitter=False, size=3)
+    t_ax = sns.barplot(df, x=xaxis, y=yaxis, hue=hueaxis, errorbar=errorbar, errwidth=1)
+    for patch in t_ax.patches:
+        clr = patch.get_facecolor()
+        patch.set_edgecolor(clr)
+        patch.set_facecolor((0,0,0,0))
+    plt.setp(t_ax.patches, linewidth=1)
+    plt.title(title, size=18)
+
+    return(fig)
