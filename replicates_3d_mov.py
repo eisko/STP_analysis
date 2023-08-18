@@ -18,7 +18,7 @@ metadata = pd.read_csv("stp_metadata.csv")
 dir_list = os.listdir(in_path)
 
 # set vid parameters
-species = "STeg"
+species = "MMus"
 inj = "OMC"
 
 # select species
@@ -51,8 +51,8 @@ for i in range(len(images)):
 # collect animation
 animation = Animation(viewer)
 
-for i in range(200):
-    viewer.dims.set_point(0, i)
+for i in range(25):
+    viewer.dims.set_point(0, i*20)
     animation.capture_keyframe()
 
 animation.animate(out_path+species+"_"+inj+"_all"+".mp4")
