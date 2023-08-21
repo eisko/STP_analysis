@@ -5,8 +5,10 @@ from STP_processing import *
 from colormaps import *
 from scipy.ndimage import gaussian_filter # for applying gaussian filter for density plots
 # from make_masks import areas
+
 # areas to generate masks for
-areas = ["grey", "CTX", "TH", "STR", "CP", "P", "MB", "PAG", "SCm", "HY", "CNU", "TEa", "ECT", "VISC", "AI", "GU"]
+areas = ["grey", "CTX", "OMCc", "ACAc", "aud","TH", "STR", "CP", "AMY", "P", "PG", "MB", "PAG", "SCm", 
+         "SNr", "HY", "CNU", "TEa", "ECT", "VISC", "AI", "GU", "BS"]
 
 
 def slice_to_contour(stp_image, mask, slice_range=None, slice=None, output="contour", gs=3, ar=1, cmap=green_cmp,
@@ -126,5 +128,54 @@ def dot_bar_plot(df, title="", xaxis="Area", yaxis="Integrated Fluorescence", hu
         patch.set_facecolor((0,0,0,0))
     plt.setp(t_ax.patches, linewidth=1)
     plt.title(title, size=18)
+
+    return(fig)
+
+def stvmm_area_scatter(data, title="", to_plot="Fluorescence"):
+    """Plots lab mouse v. singing moues scatter w/ unity line
+
+    Args:
+        data (pandas.dataframe): output of calc_fluor
+        to_plot (str, optional): Label of column in data to plot. Defaults to "Fluorescence".
+    """
+
+    # separate by species
+    data_st = data[data["species"]=="STeg"]
+    data_mm = data[data["species"]=="MMus"]
+
+    # calculate means
+    st_mean = data_st.groupby("area").mean(numeric_only=True)
+    st_se = data_st.groupby("area").sem(numeric_only=True)
+
+    mm_mean = data_mm.groupby("area").mean(numeric_only=True)
+    mm_se = data_mm.groupby("area").sem(numeric_only=True)
+
+    fig = plt.subplot()
+
+    plt.errorbar(st_mean[to_plot], mm_mean[to_plot], 
+            xerr=st_se[to_plot], fmt='|', color="orange")
+    plt.errorbar(st_mean[to_plot], mm_mean[to_plot], 
+            yerr=mm_se[to_plot], fmt='|')
+
+    # add area labels
+    labels = list(st_mean.index)
+    for i in range(len(labels)):
+        plt.annotate(labels[i], (st_mean[to_plot][i]-i*5, mm_mean[to_plot][i]+i*5))
+    
+    # adjust scale
+    plt.xscale("log")
+    plt.yscale("log")
+
+    # plot unity line
+    x = np.linspace(0,20000, 5)
+    y = x
+    plt.plot(x, y, color='red', linestyle="--", linewidth=0.5)
+
+    # add axis labels
+    plt.xlabel("Singing Mouse Integrated Fluorescence", color="tab:orange")
+    plt.ylabel("Lab Mouse Integrated Fluorescence", color="tab:blue")
+
+    # add title
+    plt.title(title)
 
     return(fig)

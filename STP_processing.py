@@ -10,8 +10,8 @@ import os
 # from make_masks import areas
 
 # areas to generate masks for
-areas = ["grey", "CTX", "TH", "STR", "CP", "P", "MB", "PAG", "SCm", "HY", "CNU", "TEa", "ECT", "VISC", "AI", "GU"]
-
+areas = ["grey", "CTX", "OMCc", "ACAc", "aud","TH", "STR", "CP", "AMY", "P", "PG", "MB", "PAG", "SCm", 
+         "SNr", "HY", "CNU", "TEa", "ECT", "VISC", "AI", "GU", "BS"]
 
 
 def make_mask(roi, atlas_in):
@@ -150,7 +150,7 @@ def calc_fluor(images, metadata, mm_masks, st_masks, mask_areas, areas_to_plot):
     """
 
     # initialize df
-    fluor_df = pd.DataFrame(columns=["area", "Integrated Fluorescence", "Volume_mm3", "brain", "species", "inj_site"])
+    fluor_df = pd.DataFrame(columns=["area", "Fluorescence", "Volume_mm3", "brain", "species", "inj_site"])
 
     for i in range(len(images)):
         row_met = metadata.iloc[i,:]
@@ -159,16 +159,14 @@ def calc_fluor(images, metadata, mm_masks, st_masks, mask_areas, areas_to_plot):
             mask_list = st_masks
         elif row_met["species"]=="MMus":
             mask_list = mm_masks
-        print(row_met)
 
         for j in range(len(areas_to_plot)):
             area_idx = mask_areas.index(areas_to_plot[j])
-            print(areas_to_plot[j], area_idx)
             mask = mask_list[area_idx]
             roi = np.multiply(images[i], mask)
             fluor = roi.sum() * 0.00001 # 10^-6 scaling factor
             vol = mask.sum() * 0.02 # mm^3 per voxel
-            row = {"area":mask_areas[j],
+            row = {"area":areas_to_plot[j],
                     "Fluorescence": fluor,
                     "Volume_mm3": vol,
                     "brain":row_met["brain"],
