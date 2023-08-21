@@ -47,6 +47,12 @@ for i in range(len(atlases)):
             omcc = np.multiply(omc, left_hemi)
             omcc[omcc>0] = 1
             area_mask = omcc
+        elif areas[j] == "ACAc":
+            aca = make_mask("ACA", atlases[i])
+            left_hemi = hemis[i]==2
+            acac = np.multiply(aca, left_hemi)
+            acac[acac>0] = 1
+            area_mask = acac
         elif areas[j] == "aud":
             tea = make_mask("TEa", atlases[i])
             visc = make_mask("VISC", atlases[i])
