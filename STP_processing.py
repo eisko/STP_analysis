@@ -136,3 +136,44 @@ def make_boundaries(plot_areas, mask_list, mask_list_order=areas, roi=None, slic
 
     return(boundaries_scaled)
 
+def calc_fluor(images, metadata, mm_masks, st_masks, mask_areas, areas_to_plot):
+    """Calculates integrated fluorescence on a per area basis.
+    Returns a pandas dataframe
+
+    Args:
+        images (list): list of images to calculate
+        metadata (dataframe): Pandas dataframe where each row corresponds to image in iamges
+        mm_masks (list): mmus masks from mmus aligned atlas
+        st_masks (list): steg masks from steg aligned atlas
+        mask_areas (list): List of strings that label each mask in mm/st_masks
+        areas_to_plot (list): List of strings for each area to plot
+    """
+
+    # initialize df
+    fluor_df = pd.DataFrame(columns=["area", "Integrated Fluorescence", "Volume_mm3", "brain", "species", "inj_site"])
+
+    for i in range(len(images)):
+        row_met = metadata.iloc[i,:]
+
+        if row_met["species"]=="STeg":
+            mask_list = st_masks
+        elif row_met["species"]=="MMus":
+            mask_list = mm_masks
+        print(row_met)
+
+        for j in range(len(areas_to_plot)):
+            area_idx = mask_areas.index(areas_to_plot[j])
+            print(areas_to_plot[j], area_idx)
+            mask = mask_list[area_idx]
+            roi = np.multiply(images[i], mask)
+            fluor = roi.sum() * 0.00001 # 10^-6 scaling factor
+            vol = mask.sum() * 0.02 # mm^3 per voxel
+            row = {"area":mask_areas[j],
+                    "Fluorescence": fluor,
+                    "Volume_mm3": vol,
+                    "brain":row_met["brain"],
+                    "species":row_met["species"],
+                    "inj_site":row_met["inj_site"]}
+            fluor_df.loc[len(fluor_df.index)] = row
+    
+    return(fluor_df)
