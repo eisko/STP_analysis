@@ -32,3 +32,21 @@ blue[:, 0] = np.linspace(1, 33/256, N) # R = 33
 blue[:, 1] = np.linspace(1, 64/256, N) # G = 64
 blue[:, 2] = np.linspace(1, 154/256, N)  # B = 154
 blue_cmp = ListedColormap(blue)
+
+g255 = np.ones((N,4))
+g255[:, 0] = np.linspace(1, 0, N)
+g255[:, 1] = np.linspace(1, 255/256, N) # G = 255
+g255[:, 2] = np.linspace(1, 0, N)
+g255_cmp = ListedColormap(g255)
+
+c255 = np.ones((N,4))
+c255[:, 0] = np.linspace(1, 0, N)
+c255[:, 1] = np.linspace(1, 255/256, N) # G = 255
+c255[:, 2] = np.linspace(1, 255/256, N) # B = 255
+c255_cmp = ListedColormap(c255)
+
+m255 = np.ones((N,4))
+m255[:, 0] = np.linspace(1, 255/256, N) # R = 255
+m255[:, 1] = np.linspace(1, 0, N) 
+m255[:, 2] = np.linspace(1, 255/256, N) # B = 255
+m255_cmp = ListedColormap(m255)
