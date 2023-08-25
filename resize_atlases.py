@@ -7,7 +7,7 @@ from skimage.transform import resize
 import tifffile as tf
 
 
-csv_file="/mnt/labNAS/Emily/STP_for_MAPseq/processed_data/file_path.csv"
+csv_file="stp_metadata.csv"
 metadata = pd.read_csv(csv_file)
 # in files, out from brainreg_to_allen
 straight_brain="allen_10um"
