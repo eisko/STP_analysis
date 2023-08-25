@@ -15,6 +15,7 @@ in_path="/mnt/labNAS/Emily/STP_for_MAPseq/3_brainreg_output/"+straight_brain+"_a
 out_path = "/mnt/labNAS/Emily/STP_for_MAPseq/4_python_output/input_tifs/resized_atlases/"
 
 for i in range(metadata.shape[0]):
+    print("working on", metadata.loc[i,"brain"])
     in_folder_path = in_path+metadata.loc[i,"brain"]+"_brainreg_"+straight_brain+"/"
     in_file_atlas = in_folder_path+"registered_atlas.tiff"
     in_file_hemis = in_folder_path+"registered_hemispheres.tiff"
