@@ -43,7 +43,7 @@ hemis = []
 print("importing registered atlases and hemis")
 for i in range(metadata.shape[0]):
     atlas_path = in_path+"allen_10um_to_"+metadata.loc[i,"brain"]+"_atlas_RESIZED.tiff"
-    hemi_path = in_path+"allen_10um_to_"+metadata.loc[i,"brain"]+"_hemi_RESIZED.tiff"
+    hemi_path = in_path+"allen_10um_to_"+metadata.loc[i,"brain"]+"_hemis_RESIZED.tiff"
     atlases.append(tf.imread(atlas_path))
     hemis.append(tf.imread(hemi_path))
 
