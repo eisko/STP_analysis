@@ -38,8 +38,6 @@ for i in range(metadata.shape[0]):
     
     # save resized images
     tf.imwrite(out_path+"allen_10um_to_"+metadata.loc[i, 'brain']+"_atlas_RESIZED.tiff", 
-               atlas_resize, 
-               imagej=True)
+               atlas_resize)
     tf.imwrite(out_path+"allen_10um_to_"+metadata.loc[i, 'brain']+"_hemis_RESIZED.tiff", 
-               hemis_resize, 
-               imagej=True)
+               hemis_resize)
