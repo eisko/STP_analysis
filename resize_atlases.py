@@ -7,8 +7,9 @@ from skimage.transform import resize
 import tifffile as tf
 
 
-csv_file="stp_metadata.csv"
-metadata = pd.read_csv(csv_file)
+meta_path="/mnt/labNAS/Emily/STP_for_MAPseq/3_brainreg_output/aligned_file_meta.csv"
+metadata = pd.read_csv(meta_path, sep=" ")
+
 # in files, out from brainreg_to_allen
 straight_brain="allen_10um"
 in_path="/mnt/labNAS/Emily/STP_for_MAPseq/3_brainreg_output/"+straight_brain+"_aligned/"
@@ -23,13 +24,14 @@ for i in range(metadata.shape[0]):
     # resize atlas/hemi file
     atlas = tf.imread(in_file_atlas)
     hemis = tf.imread(in_file_hemis)
-    atlas_resize = resize(atlas, (265, 499, 640),
+    size = metadata.loc[i,"size"]
+    atlas_resize = resize(atlas, size,
                  mode='edge',
                  anti_aliasing=False,
                  anti_aliasing_sigma=None,
                  preserve_range=True,
                  order=0)
-    hemis_resize = resize(hemis, (265, 499, 640),
+    hemis_resize = resize(hemis, size,
                  mode='edge',
                  anti_aliasing=False,
                  anti_aliasing_sigma=None,

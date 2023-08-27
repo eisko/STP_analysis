@@ -175,3 +175,44 @@ def calc_fluor(images, metadata, mm_masks, st_masks, mask_areas, areas_to_plot):
             fluor_df.loc[len(fluor_df.index)] = row
     
     return(fluor_df)
+
+def calc_fluor_individ(images, metadata, mask_dict, areas_to_plot, species=None, inj_site=None):
+    """Calculates integrated fluorescence on a per area basis.
+    Returns a pandas dataframe
+
+    Args:
+        images (list): list of images to calculate
+        metadata (dataframe): Pandas dataframe where each row corresponds to image in iamges
+        mask_dict (dictionary): dictionary where keys are areas and values are masks in same order as metadata
+        areas_to_plot (list): List of strings for each area to plot
+        species (string, optional): What species to return. Defaults to None.
+        inj_site (string, optional): What injection site to return. Defaults to None.
+    """
+
+    # initialize df
+    fluor_df = pd.DataFrame(columns=["area", "Fluorescence", "Volume_mm3", "brain", "species", "inj_site"])
+
+    if species:
+        metadata = metadata[metadata["species"]==species]
+    if inj_site:
+        metadata = metadata[metadata["inj_site"]==inj_site]
+    
+    meta_idx = list(metadata.index)
+
+    for i in meta_idx:
+        row_met = metadata.iloc[i,:]
+
+        for j in range(len(areas_to_plot)):
+            mask = mask_dict[areas_to_plot[j]][i]
+            roi = np.multiply(images[i], mask)
+            fluor = roi.sum() * 0.00001 # 10^-6 scaling factor
+            vol = mask.sum() * 0.02 # mm^3 per voxel
+            row = {"area":areas_to_plot[j],
+                    "Fluorescence": fluor,
+                    "Volume_mm3": vol,
+                    "brain":row_met["brain"],
+                    "species":row_met["species"],
+                    "inj_site":row_met["inj_site"]}
+            fluor_df.loc[len(fluor_df.index)] = row
+    
+    return(fluor_df)
