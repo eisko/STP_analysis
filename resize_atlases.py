@@ -24,7 +24,7 @@ for i in range(metadata.shape[0]):
     # resize atlas/hemi file
     atlas = tf.imread(in_file_atlas)
     hemis = tf.imread(in_file_hemis)
-    size = metadata.loc[i,"size"]
+    size = eval(metadata.loc[i,"size"]) # read_csv reads in tuple as string, eval transforms it into tuple
     atlas_resize = resize(atlas, size,
                  mode='edge',
                  anti_aliasing=False,
