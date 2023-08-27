@@ -34,6 +34,7 @@ while IFS= read -r line; do
 
   # Extract the second column (file path)
   file_path=$(echo "$line" | cut -d ',' -f 2)
+  echo $file_path
 
   # create subfolders for each aligned brain
   # Check if out_folder already exists

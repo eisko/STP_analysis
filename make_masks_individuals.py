@@ -54,59 +54,65 @@ for i in range(len(atlases)):
         st_start = time()
         print("working on", metadata.loc[i,"brain"], areas[j])
 
-        # define special cases
-        if areas[j] == "OMCc":
-            mos = make_mask("MOs", atlases[i])
-            mop = make_mask("MOp", atlases[i])
-            left_hemi = hemis[i]==2
-            omc = np.add(mos,mop)
-            omcc = np.multiply(omc, left_hemi)
-            omcc[omcc>0] = 1
-            area_mask = omcc
-        elif areas[j] == "ACAc":
-            aca = make_mask("ACA", atlases[i])
-            left_hemi = hemis[i]==2
-            acac = np.multiply(aca, left_hemi)
-            acac[acac>0] = 1
-            area_mask = acac
-        elif areas[j] == "aud":
-            tea = make_mask("TEa", atlases[i])
-            visc = make_mask("VISC", atlases[i])
-            ect = make_mask("ECT", atlases[i])
-            tea_visc = np.add(tea, visc)
-            aud = np.add(tea_visc, ect)
-            aud[aud>0] = 1
-            area_mask = aud
-        elif areas[j] == "AMY":
-            bma = make_mask("BMA", atlases[i])
-            bla = make_mask("BLA", atlases[i])
-            la = make_mask("LA", atlases[i])
-            bma_bla = np.add(bma, bla)
-            amy = np.add(bma_bla, la)
-            amy[amy>0] = 1
-            area_mask = amy
-        elif areas[j] == "HY":
-            hy = make_mask("HY", atlases[i])
-            zi = make_mask("ZI", atlases[i])
-            hy = np.subtract(hy, zi)
-            hy[hy<1] = 0
-            area_mask=hy
-        elif areas[j] == "BS":
-            grn = make_mask("GRN", atlases[i])
-            irn = make_mask("IRN", atlases[i])
-            bs = np.add(grn,irn)
-            bs[bs>0] = 1
-            area_mask = bs
+        # check if mask already created -> only run loop if does not exist
+        mask_path = out_path+metadata.loc[i,"brain"]+"_masks/"+metadata.loc[i,"brain"]+"_"+areas[j]+".npy"
+        if os.path.exists(mask_path):
+            print(metadata.loc[i,"brain"]+"_"+areas[j]+".npy", "already exists")
         else:
-            area_mask = make_mask(areas[j], atlases[i])
+            
+            # define special cases
+            if areas[j] == "OMCc":
+                mos = make_mask("MOs", atlases[i])
+                mop = make_mask("MOp", atlases[i])
+                left_hemi = hemis[i]==2
+                omc = np.add(mos,mop)
+                omcc = np.multiply(omc, left_hemi)
+                omcc[omcc>0] = 1
+                area_mask = omcc
+            elif areas[j] == "ACAc":
+                aca = make_mask("ACA", atlases[i])
+                left_hemi = hemis[i]==2
+                acac = np.multiply(aca, left_hemi)
+                acac[acac>0] = 1
+                area_mask = acac
+            elif areas[j] == "aud":
+                tea = make_mask("TEa", atlases[i])
+                visc = make_mask("VISC", atlases[i])
+                ect = make_mask("ECT", atlases[i])
+                tea_visc = np.add(tea, visc)
+                aud = np.add(tea_visc, ect)
+                aud[aud>0] = 1
+                area_mask = aud
+            elif areas[j] == "AMY":
+                bma = make_mask("BMA", atlases[i])
+                bla = make_mask("BLA", atlases[i])
+                la = make_mask("LA", atlases[i])
+                bma_bla = np.add(bma, bla)
+                amy = np.add(bma_bla, la)
+                amy[amy>0] = 1
+                area_mask = amy
+            elif areas[j] == "HY":
+                hy = make_mask("HY", atlases[i])
+                zi = make_mask("ZI", atlases[i])
+                hy = np.subtract(hy, zi)
+                hy[hy<1] = 0
+                area_mask=hy
+            elif areas[j] == "BS":
+                grn = make_mask("GRN", atlases[i])
+                irn = make_mask("IRN", atlases[i])
+                bs = np.add(grn,irn)
+                bs[bs>0] = 1
+                area_mask = bs
+            else:
+                area_mask = make_mask(areas[j], atlases[i])
 
 
-        # convert area_mask type to boolean to reduce size
-        area_mask = area_mask.astype("bool")
+            # convert area_mask type to boolean to reduce size
+            area_mask = area_mask.astype("bool")
 
-        save_folder = out_path+metadata.loc[i,"brain"]+"_masks/"
-        with open(save_folder+metadata.loc[i,"brain"]+"_"+areas[j]+".npy", "wb") as f:
-            np.save(f, area_mask, allow_pickle=False)
+            save_folder = out_path+metadata.loc[i,"brain"]+"_masks/"
+            with open(save_folder+metadata.loc[i,"brain"]+"_"+areas[j]+".npy", "wb") as f:
+                np.save(f, area_mask, allow_pickle=False)
 
 
         st_end = time()
