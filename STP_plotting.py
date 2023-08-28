@@ -160,7 +160,7 @@ def stvmm_area_scatter(data, title="", to_plot="Fluorescence"):
     # add area labels
     labels = list(st_mean.index)
     for i in range(len(labels)):
-        plt.annotate(labels[i], (st_mean[to_plot][i]-i*5, mm_mean[to_plot][i]+i*5))
+        plt.annotate(labels[i], (st_mean[to_plot][i], mm_mean[to_plot][i]))
     
     # adjust scale
     plt.xscale("log")

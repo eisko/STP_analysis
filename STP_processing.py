@@ -200,7 +200,7 @@ def calc_fluor_individ(images, metadata, mask_dict, areas_to_plot, species=None,
     meta_idx = list(metadata.index)
 
     for i in meta_idx:
-        row_met = metadata.iloc[i,:]
+        row_met = metadata.loc[i,:]
 
         for j in range(len(areas_to_plot)):
             mask = mask_dict[areas_to_plot[j]][i]
