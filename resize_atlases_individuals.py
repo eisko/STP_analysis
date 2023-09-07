@@ -23,11 +23,13 @@ for i in range(metadata.shape[0]):
     in_folder_path = in_path+metadata.loc[i,"brain"]+"_brainreg_"+straight_brain+"/"
     in_file_atlas = in_folder_path+"registered_atlas.tiff"
     in_file_hemis = in_folder_path+"registered_hemispheres.tiff"
+    in_file_bounds = in_folder_path+"boundaries.tiff"
 
     # resize atlas/hemi file
     atlas = tf.imread(in_file_atlas)
     hemis = tf.imread(in_file_hemis)
-    size = eval(metadata.loc[i,"p05_size"]) # read_csv reads in tuple as string, eval transforms it into tuple
+    bounds = tf.imread(in_file_bounds)
+    size = eval(metadata.loc[i,"rot_size"]) # read_csv reads in tuple as string, eval transforms it into tuple
     atlas_resize = resize(atlas, size,
                  mode='edge',
                  anti_aliasing=False,
@@ -40,9 +42,17 @@ for i in range(metadata.shape[0]):
                  anti_aliasing_sigma=None,
                  preserve_range=True,
                  order=0)
+    bounds_resize = resize(bounds, size,
+                 mode='edge',
+                 anti_aliasing=False,
+                 anti_aliasing_sigma=None,
+                 preserve_range=True,
+                 order=0)
     
     # save resized images
     tf.imwrite(out_path+"allen_10um_to_"+metadata.loc[i, 'brain']+"_atlas_RESIZED.tiff", 
                atlas_resize)
     tf.imwrite(out_path+"allen_10um_to_"+metadata.loc[i, 'brain']+"_hemis_RESIZED.tiff", 
                hemis_resize)
+    tf.imwrite(out_path+"allen_10um_to_"+metadata.loc[i, 'brain']+"_boundaires_RESIZED.tiff", 
+               bounds_resize)

@@ -28,9 +28,12 @@ for i in range(n_files):
     # sets negative numbers as +2^16, so set these as 0
     im_sub[im_sub > 60000] = 0
 
+    # rotate 90 degrees so same orientation as atlas
+    im_rot = np.rot90(im_sub, k=-1, axes=(1,2))
+
     # save as norm_subtracted files
     # print(out_path+meta.loc[i, 'brain']+"p05_norm_subtracted.tif")
-    tf.imwrite(out_path+meta.loc[i, 'brain']+"p05_norm_subtracted.tif", im, 
-               imagej=True)
+    # for some reason doesn't work if imagej=True
+    tf.imwrite(out_path+meta.loc[i, 'brain']+"_p05_norm_subtracted.tif", im_rot) 
     print("\n")
 
