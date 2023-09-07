@@ -27,7 +27,7 @@ out_path = home_dir+"Emily/STP_for_MAPseq/4_python_output/output_figs/"
 # add paths to metadata
 # output of mean_subtract_individuals.py
 for i in range(metadata.shape[0]):
-    b_path = in_path+"norm_subtracted/p05_mean_subtracted/"+metadata.loc[i, 'brain']+"p05_norm_subtracted.tif"
+    b_path = in_path+"norm_subtracted/p05_mean_subtracted/"+metadata.loc[i, 'brain']+"_p05_norm_subtracted.tif"
 
     metadata.loc[i,"path"] = b_path
 
