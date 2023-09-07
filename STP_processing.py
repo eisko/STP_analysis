@@ -176,7 +176,9 @@ def calc_fluor(images, metadata, mm_masks, st_masks, mask_areas, areas_to_plot):
     
     return(fluor_df)
 
-def calc_fluor_individ(images, metadata, mask_dict, areas_to_plot, species=None, inj_site=None):
+def calc_fluor_individ(images, metadata, mask_dict, areas_to_plot, 
+                       species=None, inj_site=None, int_fluor_scale=0.00001,
+                       ):
     """Calculates integrated fluorescence on a per area basis.
     Returns a pandas dataframe
 
@@ -205,7 +207,7 @@ def calc_fluor_individ(images, metadata, mask_dict, areas_to_plot, species=None,
         for j in range(len(areas_to_plot)):
             mask = mask_dict[areas_to_plot[j]][i]
             roi = np.multiply(images[i], mask)
-            fluor = roi.sum() * 0.00001 # 10^-6 scaling factor
+            fluor = roi.sum() * int_fluor_scale # 10^-6 scaling factor -> to make reasonable?
             vol = mask.sum() * 0.02 # mm^3 per voxel
             row = {"area":areas_to_plot[j],
                     "Fluorescence": fluor,
@@ -216,3 +218,24 @@ def calc_fluor_individ(images, metadata, mask_dict, areas_to_plot, species=None,
             fluor_df.loc[len(fluor_df.index)] = row
     
     return(fluor_df)
+
+def normalize_by_area(df_fluor, norm_area):
+    """
+    Takes in output from calc_fluor_individ and returns normalized flourescence column
+
+    Args:
+        df_fluor (DataFrame): output from calc_fluor_individ()
+        norm_area (string): are to use as normalization factor
+    """
+
+    output = pd.DataFrame()
+
+    for b in df_fluor['brain'].unique():
+        b_fluor = df_fluor[df_fluor['brain']==b]
+        b_area = b_fluor[b_fluor['area']==norm_area]
+        b_area_value = b_area['Fluorescence'].values[0]
+        b_normed = b_fluor['Fluorescence']/b_area_value
+        b_fluor['normalized_fluorescence'] = b_normed
+        output = pd.concat([output, b_fluor])
+
+    return output

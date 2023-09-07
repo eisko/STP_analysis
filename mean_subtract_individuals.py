@@ -23,13 +23,14 @@ for i in range(n_files):
     # print(meta.loc[i, "path"])
     im = tf.imread(home_dir+meta.loc[i, "path"])
     # subtract mean value
-    im_sub = im - meta.loc[i, "mean_subtract"]
+    # im_sub = im - meta.loc[i, "mean_subtract"]
 
-    # sets negative numbers as +2^16, so set these as 0
-    im_sub[im_sub > 60000] = 0
+    # # sets negative numbers as +2^16, so set these as 0
+    # im_sub[im_sub > 60000] = 0
 
     # rotate 90 degrees so same orientation as atlas
-    im_rot = np.rot90(im_sub, k=-1, axes=(1,2))
+    # im_rot = np.rot90(im_sub, k=-1, axes=(1,2))
+    im_rot = np.rot90(im, k=-1, axes=(1,2))
 
     # also flip left/right to get it in proper orientation
     im_flip = np.flip(im_rot, axis=2)
@@ -38,6 +39,6 @@ for i in range(n_files):
     # save as norm_subtracted files
     # print(out_path+meta.loc[i, 'brain']+"p05_norm_subtracted.tif")
     # for some reason doesn't work if imagej=True
-    tf.imwrite(out_path+meta.loc[i, 'brain']+"_p05_norm_subtracted.tif", im_flip) 
+    tf.imwrite(out_path+meta.loc[i, 'brain']+"_p05_NO_subtracted.tif", im_flip) 
     print("\n")
 

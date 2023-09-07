@@ -131,7 +131,8 @@ def dot_bar_plot(df, title="", xaxis="Area", yaxis="Integrated Fluorescence", hu
 
     return(fig)
 
-def stvmm_area_scatter(data, title="", to_plot="Fluorescence"):
+def stvmm_area_scatter(data, title="", to_plot="Fluorescence", log=True, 
+                       err="sem", ax_limits=None):
     """Plots lab mouse v. singing moues scatter w/ unity line
 
     Args:
@@ -145,31 +146,45 @@ def stvmm_area_scatter(data, title="", to_plot="Fluorescence"):
 
     # calculate means
     st_mean = data_st.groupby("area").mean(numeric_only=True)
-    st_se = data_st.groupby("area").sem(numeric_only=True)
-
     mm_mean = data_mm.groupby("area").mean(numeric_only=True)
-    mm_se = data_mm.groupby("area").sem(numeric_only=True)
+
+    # calculate error
+    if err=="sem":
+        st_err = data_st.groupby("area").sem(numeric_only=True)
+        mm_err = data_mm.groupby("area").sem(numeric_only=True)
+    elif err=="std":
+        st_err = data_st.groupby("area").std(numeric_only=True)
+        mm_err = data_mm.groupby("area").std(numeric_only=True)
+
 
     fig = plt.subplot()
 
     plt.errorbar(st_mean[to_plot], mm_mean[to_plot], 
-            xerr=st_se[to_plot], fmt='|', color="orange")
+            xerr=st_err[to_plot], fmt='|', color="orange")
     plt.errorbar(st_mean[to_plot], mm_mean[to_plot], 
-            yerr=mm_se[to_plot], fmt='|')
+            yerr=mm_err[to_plot], fmt='|')
 
     # add area labels
     labels = list(st_mean.index)
     for i in range(len(labels)):
         plt.annotate(labels[i], (st_mean[to_plot][i], mm_mean[to_plot][i]))
     
+    # set x and y lims so that starts at 0,0
+    if ax_limits:
+        plt.xlim(ax_limits)
+        plt.ylim(ax_limits)
+
+
     # adjust scale
-    plt.xscale("log")
-    plt.yscale("log")
+    if log:
+        plt.xscale("log")
+        plt.yscale("log")
 
     # plot unity line
     x = np.linspace(0,20000, 5)
     y = x
     plt.plot(x, y, color='red', linestyle="--", linewidth=0.5)
+
 
     # add axis labels
     plt.xlabel("Singing Mouse Integrated Fluorescence", color="tab:orange")
