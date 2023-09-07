@@ -38,6 +38,7 @@ areas = ["grey", "CTX", "OMCc", "ACAc", "aud","TH", "STR", "CP", "AMY", "P", "PG
 # load images
 images = []
 for i in range(metadata.shape[0]):
+    print('loading:', metadata.loc[i,"path"])
     images.append(tf.imread(metadata.loc[i,"path"]))
 
 # load masks for each individually aligned brain

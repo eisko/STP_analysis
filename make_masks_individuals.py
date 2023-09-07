@@ -64,14 +64,14 @@ for i in range(len(atlases)):
             if areas[j] == "OMCc":
                 mos = make_mask("MOs", atlases[i])
                 mop = make_mask("MOp", atlases[i])
-                left_hemi = hemis[i]==2
+                left_hemi = hemis[i]==1
                 omc = np.add(mos,mop)
                 omcc = np.multiply(omc, left_hemi)
                 omcc[omcc>0] = 1
                 area_mask = omcc
             elif areas[j] == "ACAc":
                 aca = make_mask("ACA", atlases[i])
-                left_hemi = hemis[i]==2
+                left_hemi = hemis[i]==1
                 acac = np.multiply(aca, left_hemi)
                 acac[acac>0] = 1
                 area_mask = acac

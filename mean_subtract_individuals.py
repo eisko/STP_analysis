@@ -31,9 +31,13 @@ for i in range(n_files):
     # rotate 90 degrees so same orientation as atlas
     im_rot = np.rot90(im_sub, k=-1, axes=(1,2))
 
+    # also flip left/right to get it in proper orientation
+    im_flip = np.flip(im_rot, axis=2)
+
+
     # save as norm_subtracted files
     # print(out_path+meta.loc[i, 'brain']+"p05_norm_subtracted.tif")
     # for some reason doesn't work if imagej=True
-    tf.imwrite(out_path+meta.loc[i, 'brain']+"_p05_norm_subtracted.tif", im_rot) 
+    tf.imwrite(out_path+meta.loc[i, 'brain']+"_p05_norm_subtracted.tif", im_flip) 
     print("\n")
 
