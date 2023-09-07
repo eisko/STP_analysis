@@ -77,28 +77,35 @@ for i in range(metadata.shape[0]):
 areas_plot = ["OMCc", "CP", "aud", "AMY", "TH", "HY", "SNr", "SCm", "PG", "PAG", "BS"]
 
 omc_fluor = calc_fluor_individ(images, metadata, mask_dict, areas_to_plot=areas_plot, inj_site="OMC")
-omc_fluor
+# save omc_fluor
+omc_fluor.to_csv(out_path+"omc_fluor")
+
 # make dot plot
+plt.figure()
 dot_bar_plot(omc_fluor, title="OMC", xaxis="area", yaxis="Fluorescence", hueaxis="species")
 plt.savefig(out_path+"OMC_fluor_dotplot.jpeg", dpi=300, bbox_inches="tight")
-plt.show()
+plt.close()
 
+plt.figure()
 stvmm_area_scatter(omc_fluor, title="OMC Injections")
 plt.savefig(out_path+"OMC_fluor_scatter.jpeg", dpi=300, bbox_inches="tight")
-plt.show()
+plt.close()
 
 ## ACC
 areas_plot = ["ACAc", "CP", "aud", "AMY", "TH", "HY", "SNr", "SCm", "PG", "PAG", "BS"]
 
 acc_fluor = calc_fluor_individ(images, metadata, mask_dict, areas_to_plot=areas_plot, inj_site="ACC")
+acc_fluor.to_csv(out_path+"acc_fluor")
 
 # make dot plot
+plt.figure()
 dot_bar_plot(acc_fluor, title="ACC", xaxis="area", yaxis="Fluorescence", hueaxis="species")
 plt.savefig(out_path+"ACC_fluor_dotplot.jpeg", dpi=300, bbox_inches="tight")
-plt.show()
+plt.close()
 
 # make scatterplot
+plt.figure()
 stvmm_area_scatter(acc_fluor, title="ACC Injections")
 plt.savefig(out_path+"ACC_fluor_scatter.jpeg", dpi=300, bbox_inches="tight")
-plt.show()
+plt.close()
 
