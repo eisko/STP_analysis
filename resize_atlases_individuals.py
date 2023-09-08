@@ -9,7 +9,7 @@ import tifffile as tf
 home_dir = "/mnt/labNAS/"
 # home_dir = "/Volumes/Data/"
 
-meta_path=home_dir+"Emily/STP_for_MAPseq/3_brainreg_output/aligned_file_meta.csv"
+meta_path=home_dir+"Emily/STP_for_MAPseq/3_brainreg_output/aligned_file_meta_1b.csv"
 metadata = pd.read_csv(meta_path, sep=" ")
 # metadata = pd.read_csv("STP_metadata.csv")
 
