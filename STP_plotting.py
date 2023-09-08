@@ -4,6 +4,8 @@ import seaborn as sns
 from STP_processing import *
 from colormaps import *
 from scipy.ndimage import gaussian_filter # for applying gaussian filter for density plots
+import math # needed for sqrt for ci95
+
 # from make_masks import areas
 
 # areas to generate masks for
@@ -144,30 +146,33 @@ def stvmm_area_scatter(data, title="", to_plot="Fluorescence", log=True,
     data_st = data[data["species"]=="STeg"]
     data_mm = data[data["species"]=="MMus"]
 
-    # calculate means
-    st_mean = data_st.groupby("area").mean(numeric_only=True)
-    mm_mean = data_mm.groupby("area").mean(numeric_only=True)
+    # calculate stats
+    st_stats = data_st.groupby(["area"])[to_plot].agg(['mean', 'count', 'std', 'sem'])
+    mm_stats = data_mm.groupby(["area"])[to_plot].agg(['mean', 'count', 'std', 'sem'])
 
-    # calculate error
-    if err=="sem":
-        st_err = data_st.groupby("area").sem(numeric_only=True)
-        mm_err = data_mm.groupby("area").sem(numeric_only=True)
-    elif err=="std":
-        st_err = data_st.groupby("area").std(numeric_only=True)
-        mm_err = data_mm.groupby("area").std(numeric_only=True)
+    ci95 = []
+    for i in st_stats.index:
+        m, c, sd, se = st_stats.loc[i]
+        ci95.append(1.96*sd/math.sqrt(c))
+    st_stats['ci95'] = ci95
 
+    ci95 = []
+    for i in mm_stats.index:
+        m, c, sd, se = mm_stats.loc[i]
+        ci95.append(1.96*sd/math.sqrt(c))
+    mm_stats['ci95'] = ci95
 
     fig = plt.subplot()
 
-    plt.errorbar(st_mean[to_plot], mm_mean[to_plot], 
-            xerr=st_err[to_plot], fmt='|', color="orange")
-    plt.errorbar(st_mean[to_plot], mm_mean[to_plot], 
-            yerr=mm_err[to_plot], fmt='|')
+    plt.errorbar(st_stats['mean'], mm_stats['mean'], 
+            xerr=st_stats[err], fmt='|', color="orange")
+    plt.errorbar(st_stats['mean'], mm_stats['mean'], 
+            yerr=mm_stats[err], fmt='|')
 
     # add area labels
-    labels = list(st_mean.index)
+    labels = list(st_stats.index)
     for i in range(len(labels)):
-        plt.annotate(labels[i], (st_mean[to_plot][i], mm_mean[to_plot][i]))
+        plt.annotate(labels[i], (st_stats['mean'][i], mm_stats['mean'][i]))
     
     # set x and y lims so that starts at 0,0
     if ax_limits:
