@@ -249,3 +249,47 @@ def stvmm_area_scatter(data, title="", to_plot="Fluorescence", log=True,
     plt.title(title)
 
     return(fig)
+
+def volcano_plot(df, x="log2_fc", y="nlog10_p", title=None, labels="area", p_05=True, p_01=True, p_bf=None):
+    """output volcano plot based on comparison of species proportional means
+
+    Args:
+        df (pd.DataFrame): output of proprotion_ttest
+    """
+
+    # areas = sorted(df['area'].unique())
+
+    fig = plt.subplot()
+
+    x=df[x]
+    y=df[y]
+
+    plt.scatter(x,y, s=25)
+    # plt.xlim([-1,1])
+    # plt.ylim([-0.1,4])
+    # plot 0 axes
+    plt.axline((0, 0), (0, 1),linestyle='--', linewidth=0.5)
+    plt.axline((0, 0), (1, 0),linestyle='--', linewidth=0.5)
+
+    # p_05
+    if p_05:
+        plt.axline((0, -np.log10(0.05)), (1,  -np.log10(0.05)),linestyle='--', color='r', alpha=0.75, linewidth=0.5)
+        plt.text(-0.1, -np.log10(0.05)+.015, 'p<0.05', color='r', alpha=0.75)
+    if p_01:
+        plt.axline((0, -np.log10(0.01)), (1,  -np.log10(0.01)),linestyle='--', color='r', alpha=0.5, linewidth=0.5)
+        plt.text(-0.1, -np.log10(0.01)+.015, 'p<0.01', color='r', alpha=0.75)
+    if p_bf:
+        plt.axline((0, -np.log10(p_bf)), (1,  -np.log10(p_bf)),linestyle='--', color='r', alpha=0.75, linewidth=0.5)
+        plt.text(-0.1, -np.log10(p_bf)+.015, 'p<bf_01', color='r', alpha=0.75)
+
+
+    for i in range(df.shape[0]):
+        plt.text(x=df.loc[i,"log2_fc"]+0.01,y=df.loc[i,"nlog10_p"]+0.01,s=df.loc[i, labels], 
+            fontdict=dict(color='black',size=10))
+
+
+    plt.title(title)
+    plt.xlabel('log2(fold change)')
+    plt.ylabel('-log10(p-value)')
+
+    return(fig)

@@ -72,7 +72,25 @@ viewer.add_image(
     blending="additive",
     opacity=0.2
 )
-    
+
+# load mask(s)
+areas_plot = ["OMCc", "CP", "aud", "AMY", "TH", "HY", "SNr", "SCm", "PG", "PAG", "BS"]
+mask_folder = home_dir+"Emily/STP_for_MAPseq/4_python_output/input_tifs/masks/steg_220429_hs_asr/"
+mask_dict = {}
+for area in areas_plot:
+    with open(mask_folder+"steg_220429_hs_asr_"+area+".npy", "rb") as f:
+        mask_dict[area] = np.load(f)
+        
+for i in range(len(areas_plot)):
+    viewer.add_image(
+        mask_dict[areas_plot[i]],
+        name=areas_plot[i],
+        scale=[2.5,1,1],
+        blending="additive",
+        opacity=0.2,
+        colormap="bop purple"
+    )
+
 # collect animation
 animation = Animation(viewer)
 
@@ -80,4 +98,4 @@ for i in range(25):
     viewer.dims.set_point(0, i*20)
     animation.capture_keyframe()
 
-animation.animate(out_path+"avg_st_mm_"+inj+"_steg_220429_aligned_NO_sub"+".mp4")
+animation.animate(out_path+"avg_st_mm_"+inj+"_steg_220429_aligned_NO_sub_masks"+".mp4")
