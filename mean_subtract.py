@@ -30,10 +30,10 @@ for i in range(n_files):
 
     im = tf.imread(im_path)
     # subtract mean value
-    im_sub = im - meta.loc[i, "mean_subtract"]
+    # im_sub = im - meta.loc[i, "mean_subtract"]
 
-    # sets negative numbers as +2^16, so set these as 0
-    im_sub[im_sub > 60000] = 0
+    # # sets negative numbers as +2^16, so set these as 0
+    # im_sub[im_sub > 60000] = 0
 
     # # rotate 90 degrees so same orientation as atlas
     # im_rot = np.rot90(im_sub, k=-1, axes=(1,2))
@@ -44,14 +44,14 @@ for i in range(n_files):
 
 
     # save as norm_subtracted files
-    print(out_path+meta.loc[i, 'brain']+"_aligned_to_"+align_brain+"_norm_subtracted.tif")
+    print(out_path+meta.loc[i, 'brain']+"_aligned_to_"+align_brain+"_NO_subtracted.tif")
     # tf.imwrite(out_path+meta.loc[i, 'brain']+"_aligned_"+align_brain+"_norm_subtracted.tif", im_flip)
-    tf.imwrite(out_path+meta.loc[i, 'brain']+"_aligned_to_"+align_brain+"_norm_subtracted.tif", im_sub) 
+    # tf.imwrite(out_path+meta.loc[i, 'brain']+"_aligned_to_"+align_brain+"_norm_subtracted.tif", im_sub) 
 
     # for some reason doesn't work if imagej=True
 
     # save as NO subtraction
-    # tf.imwrite(out_path+meta.loc[i, 'brain']+"_p05_NO_subtracted.tif", im_flip) 
+    tf.imwrite(out_path+meta.loc[i, 'brain']+"_aligned_to_"+align_brain+"_NO_subtracted.tif", im) 
     print("\n")
     
 

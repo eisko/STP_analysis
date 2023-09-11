@@ -17,8 +17,8 @@ out_path = home_dir+"Emily/STP_for_MAPseq/4_python_output/output_figs/"
 metadata = pd.read_csv("stp_metadata.csv")
 
 # import images
-steg_path = in_path+metadata.loc[4,'brain']+"_aligned_to_STeg_220429_norm_subtracted.tif"
-mmus_path = in_path+metadata.loc[1,'brain']+"_aligned_to_STeg_220429_norm_subtracted.tif"
+steg_path = in_path+metadata.loc[4,'brain']+"_aligned_to_STeg_220429_NO_subtracted.tif"
+mmus_path = in_path+metadata.loc[1,'brain']+"_aligned_to_STeg_220429_NO_subtracted.tif"
 
 # atlas boundaries
 steg_220429_bound =  home_dir+"Emily/STP_for_MAPseq/4_python_output/input_tifs/resized_atlases/allen_10um_to_OMC_STeg_220429_b2_boundaires_RESIZED.tiff"
@@ -73,4 +73,4 @@ for i in range(25):
     viewer.dims.set_point(0, i*20)
     animation.capture_keyframe()
 
-animation.animate(out_path+metadata.loc[4,'brain']+"_"+metadata.loc[1,'brain']+"_steg_220429_bound"+".mp4")
+animation.animate(out_path+metadata.loc[4,'brain']+"_"+metadata.loc[1,'brain']+"_steg_220429_bound_NO_sub"+".mp4")

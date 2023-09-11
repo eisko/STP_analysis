@@ -109,6 +109,56 @@ def plot_contour(omc_image, acc_image, mask_list, masks_to_plot, roi,
 
     return(fig)
 
+def plot_contour_species(mm_image, st_image, mask_dict, plot_areas, roi,
+                          view="front", alpha_mm=0.75, alpha_st=0.75):
+    """Plot contour map of max projection of roi of to compare aligned
+    Singing and lab mouse
+
+    Args:
+        mm_image (np.array): 3D STP images for MMus
+        st_image (np.array): 3D STP images for STeg
+        mask_dict (dict): dictionary of aligned masks where keys are areas,
+                            and values are masks
+        masks_to_plot (list): list of strings specifying the areas to plot in outline, 
+                            and the order the areas should be laid
+        roi (str): Region of interest to apply mask and plot max projection
+        view (str, optional): what view, can be 'front', 'side', or 'top'. Defaults to "front".
+        species (str, optional): Specify species so get correct color for outline. Defaults to "STeg".
+    """
+    # set prarmeters
+    if view=="front":
+        ar = 1
+        transform = (0,1,2)
+    elif view=="side":
+        ar = 1/2.5
+        transform = (2,1,0)
+    elif view=="top":
+        ar=2.5
+        transform = (1,0,2)
+
+    # transform/rotate data
+    st_image = np.transpose(st_image, transform)
+    mm_image = np.transpose(mm_image, transform)
+    mask_transpose = mask_dict.copy()
+    for mask in mask_transpose:
+        mask_transpose[mask] = np.transpose(mask_dict[mask], transform)
+
+    # create outline of max project slice
+    outline = make_boundaries_dict(plot_areas=plot_areas, mask_dict=mask_transpose, roi=roi)
+    
+    # slice outline
+    roi_mask = mask_transpose[roi]
+
+    fig, axs = plt.subplots()
+
+    slice_to_contour(mm_image, roi_mask, cmap=blue_cmp, alpha=alpha_mm)
+    slice_to_contour(st_image, roi_mask, cmap=orange_cmp, alpha=alpha_st)
+    axs.set_aspect(ar)
+    axs.axis('off')
+    plt.imshow(outline, cmap="Greys", aspect=ar)
+
+    # return(fig)
+
 def dot_bar_plot(df, title="", xaxis="Area", yaxis="Integrated Fluorescence", hueaxis="Species",
                  errorbar="se"):
     """

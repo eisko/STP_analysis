@@ -136,6 +136,80 @@ def make_boundaries(plot_areas, mask_list, mask_list_order=areas, roi=None, slic
 
     return(boundaries_scaled)
 
+def make_boundaries_dict(plot_areas, mask_dict, roi=None, slice=None, scaling_factor=1000, boundary_mode="thick"):
+    """_summary_
+
+    Args:
+        plot_areas (list): List of strings of areas in order to include to draw boundaries
+        mask_dict (dict): dictionary where keys are areas and values are the corresponding mask
+        roi (int, optional): used to determine bounds for max slices. Defaults to None.
+        slice (int, optional): Set to slice index if want to return 1 slice, or slice of slices. Defaults to None.
+        scaling_factor (int, optional): how much to scale the final boundary value (i.e. intensity) to make visible when plotting.
+                                Defaults to 1000
+        boudnary_mode (str, optional): mode used to make boundaries, inherited from skimage.segmentation.find_boudnaries
+                            Defaults to "thick"
+
+    Returns:
+        _type_: _description_
+    """
+    # # 0.
+    # # create masks, which is list containing on masks to be included in output
+    # masks = [mask_list[mask_list_order.index(plot_areas[i])] for i in range(len(plot_areas))]
+
+    # 1. determine slices to return
+    # if roi == int, roi==slice, slice==true:
+    # output idx = slice bounds?
+    if slice:
+        if len(slice)==1:
+            start = slice
+            end = slice + 1
+        elif len(slice)==2:
+             start = slice[0]
+             end = slice[1]
+    elif roi:
+            # get start/end of roi
+            roi_mask = mask_dict[roi]
+            roi_idx = roi_mask.sum(axis=1).sum(axis=1) > 0
+            slices_n = np.array(range(roi_idx.shape[0]))
+            start = slices_n[roi_idx].min()
+            end = slices_n[roi_idx].max()
+    else:
+        start = 0
+        end = 201
+
+    # set order for masks
+    masks = [mask_dict[area] for area in plot_areas]
+
+    # set bounds for every mask
+    masks = [m[start:end] for m in masks]
+
+
+    # 2. max project all masks after setting bounds
+    masks_max = [m.max(axis=0) for m in masks]
+
+    # 3. add masks on top of each other -> can't do this or will also get boundaries of intersections of masks
+    # 3. instead, 
+    #   3a) set each mask as diff number in order specified in areas_list
+    masks_id = [masks_max[i]*(i+1) for i in range(len(masks_max))]
+    #   3b) take maximum of all masks
+    mask_final = masks_id[0] # initailize
+    for i in range(len(masks_id)):
+        mask_final = np.maximum(mask_final, masks_id[i]) # get maximum based on next mask
+    # could return(mask_final) to visualize w/ matplotlib, where area labelled by color
+    # return(mask_final)
+
+    # 4. find boundaries w/ skimage?
+    boundaries = find_boundaries(mask_final.astype(int), mode=boundary_mode).astype(
+        np.int8, copy=False)
+
+    # 5. convert image to 0,1*scaling_factor???
+    boundaries_scaled = boundaries * scaling_factor
+
+
+    return(boundaries_scaled)
+
+
+
 def calc_fluor(images, metadata, mm_masks, st_masks, mask_areas, areas_to_plot):
     """Calculates integrated fluorescence on a per area basis.
     Returns a pandas dataframe
