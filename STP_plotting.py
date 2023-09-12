@@ -109,6 +109,56 @@ def plot_contour(omc_image, acc_image, mask_list, masks_to_plot, roi,
 
     return(fig)
 
+def plot_contour_species(mm_image, st_image, mask_dict, plot_areas, roi,
+                          view="front", alpha_mm=0.75, alpha_st=0.75):
+    """Plot contour map of max projection of roi of to compare aligned
+    Singing and lab mouse
+
+    Args:
+        mm_image (np.array): 3D STP images for MMus
+        st_image (np.array): 3D STP images for STeg
+        mask_dict (dict): dictionary of aligned masks where keys are areas,
+                            and values are masks
+        masks_to_plot (list): list of strings specifying the areas to plot in outline, 
+                            and the order the areas should be laid
+        roi (str): Region of interest to apply mask and plot max projection
+        view (str, optional): what view, can be 'front', 'side', or 'top'. Defaults to "front".
+        species (str, optional): Specify species so get correct color for outline. Defaults to "STeg".
+    """
+    # set prarmeters
+    if view=="front":
+        ar = 1
+        transform = (0,1,2)
+    elif view=="side":
+        ar = 1/2.5
+        transform = (2,1,0)
+    elif view=="top":
+        ar=2.5
+        transform = (1,0,2)
+
+    # transform/rotate data
+    st_image = np.transpose(st_image, transform)
+    mm_image = np.transpose(mm_image, transform)
+    mask_transpose = mask_dict.copy()
+    for mask in mask_transpose:
+        mask_transpose[mask] = np.transpose(mask_dict[mask], transform)
+
+    # create outline of max project slice
+    outline = make_boundaries_dict(plot_areas=plot_areas, mask_dict=mask_transpose, roi=roi)
+    
+    # slice outline
+    roi_mask = mask_transpose[roi]
+
+    fig, axs = plt.subplots()
+
+    slice_to_contour(mm_image, roi_mask, cmap=blue_cmp, alpha=alpha_mm)
+    slice_to_contour(st_image, roi_mask, cmap=orange_cmp, alpha=alpha_st)
+    axs.set_aspect(ar)
+    axs.axis('off')
+    plt.imshow(outline, cmap="Greys", aspect=ar)
+
+    # return(fig)
+
 def dot_bar_plot(df, title="", xaxis="Area", yaxis="Integrated Fluorescence", hueaxis="Species",
                  errorbar="se"):
     """
@@ -197,5 +247,49 @@ def stvmm_area_scatter(data, title="", to_plot="Fluorescence", log=True,
 
     # add title
     plt.title(title)
+
+    return(fig)
+
+def volcano_plot(df, x="log2_fc", y="nlog10_p", title=None, labels="area", p_05=True, p_01=True, p_bf=None):
+    """output volcano plot based on comparison of species proportional means
+
+    Args:
+        df (pd.DataFrame): output of proprotion_ttest
+    """
+
+    # areas = sorted(df['area'].unique())
+
+    fig = plt.subplot()
+
+    x=df[x]
+    y=df[y]
+
+    plt.scatter(x,y, s=25)
+    # plt.xlim([-1,1])
+    # plt.ylim([-0.1,4])
+    # plot 0 axes
+    plt.axline((0, 0), (0, 1),linestyle='--', linewidth=0.5)
+    plt.axline((0, 0), (1, 0),linestyle='--', linewidth=0.5)
+
+    # p_05
+    if p_05:
+        plt.axline((0, -np.log10(0.05)), (1,  -np.log10(0.05)),linestyle='--', color='r', alpha=0.75, linewidth=0.5)
+        plt.text(-0.1, -np.log10(0.05)+.015, 'p<0.05', color='r', alpha=0.75)
+    if p_01:
+        plt.axline((0, -np.log10(0.01)), (1,  -np.log10(0.01)),linestyle='--', color='r', alpha=0.5, linewidth=0.5)
+        plt.text(-0.1, -np.log10(0.01)+.015, 'p<0.01', color='r', alpha=0.75)
+    if p_bf:
+        plt.axline((0, -np.log10(p_bf)), (1,  -np.log10(p_bf)),linestyle='--', color='r', alpha=0.75, linewidth=0.5)
+        plt.text(-0.1, -np.log10(p_bf)+.015, 'p<bf_01', color='r', alpha=0.75)
+
+
+    for i in range(df.shape[0]):
+        plt.text(x=df.loc[i,"log2_fc"]+0.01,y=df.loc[i,"nlog10_p"]+0.01,s=df.loc[i, labels], 
+            fontdict=dict(color='black',size=10))
+
+
+    plt.title(title)
+    plt.xlabel('log2(fold change)')
+    plt.ylabel('-log10(p-value)')
 
     return(fig)

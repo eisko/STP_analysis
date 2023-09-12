@@ -47,7 +47,7 @@ while IFS= read -r line; do
   fi
 
   # run brainreg
-  brainreg $file_path "${out_folder}/${name}_brainreg_${straight_brain}" \
+  brainreg "/mnt/labNAS/${file_path}" "${out_folder}/${name}_brainreg_${straight_brain}" \
   -v 50 20 20 --orientation $orientation --atlas allen_mouse_50um
 
 done < $csv_file

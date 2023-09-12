@@ -31,7 +31,7 @@ out_path = "/mnt/labNAS/Emily/STP_for_MAPseq/4_python_output/input_tifs/masks/"
 
 # areas to generate masks for
 areas = ["grey", "CTX", "OMCc", "ACAc", "aud","TH", "STR", "CP", "AMY", "P", "PG", "MB", "PAG", "SCm", 
-         "SNr", "HY", "CNU", "TEa", "ECT", "VISC", "AI", "GU", "BS"]
+         "SNr", "HY", "CNU", "TEa", "ECT", "VISC", "AI", "GU", "BS", "HIP"]
 
 # create masks for every brain
 for i in range(metadata.shape[0]):
