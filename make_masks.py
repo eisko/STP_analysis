@@ -104,7 +104,6 @@ for j in range(len(areas)):
 
 
         # convert area_mask type to boolean to reduce size
-        print(area_mask.shape)
         area_mask = area_mask.astype("bool")
 
         with open(out_path+atlas_label+"_"+areas[j]+".npy", "wb") as f:
