@@ -1,4 +1,5 @@
 # load packages
+import os
 import numpy as np
 import pandas as pd
 from skimage import io # import tiff file as ndarray
@@ -41,66 +42,73 @@ for j in range(len(areas)):
     st_start = time()
     print("working on", atlas_label, areas[j])
 
-    # define special cases
-    if areas[j] == "OMCi":
-        mos = make_mask("MOs", steg_reg_atlas)
-        mop = make_mask("MOp", steg_reg_atlas)
-        right_hemi = steg_reg_hemi==2
-        omc = np.add(mos,mop)
-        omci = np.multiply(omc, right_hemi)
-        omci[omci>0] = 1
-        area_mask = omci
-    if areas[j] == "OMCc":
-        mos = make_mask("MOs", steg_reg_atlas)
-        mop = make_mask("MOp", steg_reg_atlas)
-        left_hemi = steg_reg_hemi==1
-        omc = np.add(mos,mop)
-        omcc = np.multiply(omc, left_hemi)
-        omcc[omcc>0] = 1
-        area_mask = omcc
-    elif areas[j] == "ACAc":
-        aca = make_mask("ACA", steg_reg_atlas)
-        left_hemi = steg_reg_hemi==1
-        acac = np.multiply(aca, left_hemi)
-        acac[acac>0] = 1
-        area_mask = acac
-    elif areas[j] == "aud":
-        tea = make_mask("TEa", steg_reg_atlas)
-        visc = make_mask("VISC", steg_reg_atlas)
-        ect = make_mask("ECT", steg_reg_atlas)
-        tea_visc = np.add(tea, visc)
-        aud = np.add(tea_visc, ect)
-        aud[aud>0] = 1
-        area_mask = aud
-    elif areas[j] == "AMY":
-        bma = make_mask("BMA", steg_reg_atlas)
-        bla = make_mask("BLA", steg_reg_atlas)
-        la = make_mask("LA", steg_reg_atlas)
-        bma_bla = np.add(bma, bla)
-        amy = np.add(bma_bla, la)
-        amy[amy>0] = 1
-        area_mask = amy
-    elif areas[j] == "HY":
-        hy = make_mask("HY", steg_reg_atlas)
-        zi = make_mask("ZI", steg_reg_atlas)
-        hy = np.subtract(hy, zi)
-        hy[hy<1] = 0
-        area_mask=hy
-    elif areas[j] == "BS":
-        grn = make_mask("GRN", steg_reg_atlas)
-        irn = make_mask("IRN", steg_reg_atlas)
-        bs = np.add(grn,irn)
-        bs[bs>0] = 1
-        area_mask = bs
+    # check if mask already created -> only run loop if does not exist
+    mask_path = out_path+atlas_label+"_"+areas[j]+".npy"
+    if os.path.exists(mask_path):
+        print(atlas_label+"_"+areas[j]+".npy", "already exists")
     else:
-        area_mask = make_mask(areas[j], steg_reg_atlas)
+
+        # define special cases
+        if areas[j] == "OMCi":
+            mos = make_mask("MOs", steg_reg_atlas)
+            mop = make_mask("MOp", steg_reg_atlas)
+            right_hemi = steg_reg_hemi==2
+            omc = np.add(mos,mop)
+            omci = np.multiply(omc, right_hemi)
+            omci[omci>0] = 1
+            area_mask = omci
+            print(area_mask.shape)
+        if areas[j] == "OMCc":
+            mos = make_mask("MOs", steg_reg_atlas)
+            mop = make_mask("MOp", steg_reg_atlas)
+            left_hemi = steg_reg_hemi==1
+            omc = np.add(mos,mop)
+            omcc = np.multiply(omc, left_hemi)
+            omcc[omcc>0] = 1
+            area_mask = omcc
+        elif areas[j] == "ACAc":
+            aca = make_mask("ACA", steg_reg_atlas)
+            left_hemi = steg_reg_hemi==1
+            acac = np.multiply(aca, left_hemi)
+            acac[acac>0] = 1
+            area_mask = acac
+        elif areas[j] == "aud":
+            tea = make_mask("TEa", steg_reg_atlas)
+            visc = make_mask("VISC", steg_reg_atlas)
+            ect = make_mask("ECT", steg_reg_atlas)
+            tea_visc = np.add(tea, visc)
+            aud = np.add(tea_visc, ect)
+            aud[aud>0] = 1
+            area_mask = aud
+        elif areas[j] == "AMY":
+            bma = make_mask("BMA", steg_reg_atlas)
+            bla = make_mask("BLA", steg_reg_atlas)
+            la = make_mask("LA", steg_reg_atlas)
+            bma_bla = np.add(bma, bla)
+            amy = np.add(bma_bla, la)
+            amy[amy>0] = 1
+            area_mask = amy
+        elif areas[j] == "HY":
+            hy = make_mask("HY", steg_reg_atlas)
+            zi = make_mask("ZI", steg_reg_atlas)
+            hy = np.subtract(hy, zi)
+            hy[hy<1] = 0
+            area_mask=hy
+        elif areas[j] == "BS":
+            grn = make_mask("GRN", steg_reg_atlas)
+            irn = make_mask("IRN", steg_reg_atlas)
+            bs = np.add(grn,irn)
+            bs[bs>0] = 1
+            area_mask = bs
+        else:
+            area_mask = make_mask(areas[j], steg_reg_atlas)
 
 
-    # convert area_mask type to boolean to reduce size
-    area_mask = area_mask.astype("bool")
+        # convert area_mask type to boolean to reduce size
+        area_mask = area_mask.astype("bool")
 
-    with open(out_path+atlas_label+"_"+areas[j]+".npy", "wb") as f:
-        np.save(f, area_mask, allow_pickle=False)
+        with open(out_path+atlas_label+"_"+areas[j]+".npy", "wb") as f:
+            np.save(f, area_mask, allow_pickle=False)
 
 
     st_end = time()
