@@ -58,7 +58,7 @@ def slice_to_contour(stp_image, mask, slice_range=None, slice=None, output="cont
     return(contour)
 
 
-def plot_contour(omc_image, acc_image, mask_list, masks_to_plot, roi, 
+def plot_contour_omc_acc(omc_image, acc_image, mask_list, masks_to_plot, roi, 
                  mask_list_order=areas, view="front", species="STeg"):
     """Plot contour map of max projection of roi
 
@@ -106,6 +106,74 @@ def plot_contour(omc_image, acc_image, mask_list, masks_to_plot, roi,
     axs.set_aspect(ar)
     axs.axis('off')
     plt.imshow(outline, cmap=sp_cmp, aspect=ar)
+
+    return(fig)
+
+def plot_contour(images, mask_dict, masks_to_plot, roi=None, 
+                 view="front", cmaps=None):
+    """Plot contour map of max projection of up to 3 images
+
+    Args:
+        images (list): List of 3D STP images to be plotted
+        mask_dict (dict): Dictionary of masks to use
+        masks_to_plot (list): list of strings specifying the areas to plot in outline, and the order the areas should be laid
+        roi (str, optional): Region of interest to apply mask and plot max projection. Defaults to None.
+        view (str, optional): what view, can be 'front', 'side', or 'top'. Defaults to "front".
+        cmaps (list, optional): list of cmaps to be used to distinguish images. Defaults to None.
+    """
+
+    # set prarmeters
+    if view=="front":
+        ar = 1
+        transform = (0,1,2)
+    elif view=="side":
+        ar = 1/2.5
+        transform = (2,1,0)
+    elif view=="top":
+        ar=2.5
+        transform = (1,0,2)
+
+    # transform/rotate data
+    im_tr = [np.transpose(im, transform) for im in images]
+    mask_tr = mask_dict.copy()
+    for area in mask_tr:
+        if type(mask_tr[area])==list:
+            for i in range(len(mask_tr[area])):
+                mask_tr[area][i] = np.transpose(mask_dict[area][i], transform)
+        else:
+            for i in range(len(mask_tr[area])):
+                mask_tr[area] = np.transpose(mask_dict[area], transform)
+
+
+    mask_out = mask_tr.copy()
+    if type(mask_tr[roi]==list):
+        mask_out[roi] = mask_tr[roi][0]
+    # create outline of max project slice
+    outline = make_boundaries_dict(plot_areas=masks_to_plot, mask_dict=mask_out, roi=roi)
+    
+    # slice outline
+    if roi:
+        roi_mask = mask_tr[roi]
+    else:
+        roi_mask = mask_tr['grey']
+
+    fig, axs = plt.subplots()
+
+    if cmaps:
+        colors=cmaps
+    else:
+        colors = [blue_cmp, orange_cmp, green_cmp]
+
+    if type(roi_mask)==list:
+        for i in range(len(images)):
+            slice_to_contour(im_tr[i], roi_mask[i], cmap=colors[i])
+    else:
+        for i in range(len(images)):
+            slice_to_contour(im_tr[i], roi_mask, cmap=colors[i])
+
+    axs.set_aspect(ar)
+    axs.axis('off')
+    plt.imshow(outline, cmap="Greys", aspect=ar)
 
     return(fig)
 

@@ -30,7 +30,7 @@ steg_reg_hemi = io.imread(in_path+"registered_hemispheres_RESIZED.tif", plugin="
 # atlas_label = ["STeg_220429", "MMus_220303"]
 
 # areas to generate masks for
-areas = ["grey", "CTX", "OMCc", "ACAc", "aud","TH", "STR", "CP", "AMY", "P", "PG", "MB", "PAG", "SCm", 
+areas = ["grey", "CTX", "OMCi", "OMCc", "ACAc", "aud","TH", "STR", "CP", "AMY", "P", "PG", "MB", "PAG", "SCm", 
          "SNr", "HY", "CNU", "TEa", "ECT", "VISC", "AI", "GU", "BS", "HIP"]
 
 
@@ -42,6 +42,14 @@ for j in range(len(areas)):
     print("working on", atlas_label, areas[j])
 
     # define special cases
+    if areas[j] == "OMCi":
+        mos = make_mask("MOs", steg_reg_atlas)
+        mop = make_mask("MOp", steg_reg_atlas)
+        right_hemi = steg_reg_hemi==2
+        omc = np.add(mos,mop)
+        omci = np.multiply(omc, right_hemi)
+        omci[omci>0] = 1
+        area_mask = omci
     if areas[j] == "OMCc":
         mos = make_mask("MOs", steg_reg_atlas)
         mop = make_mask("MOp", steg_reg_atlas)
