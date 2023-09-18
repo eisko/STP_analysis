@@ -57,7 +57,7 @@ for j in range(len(areas)):
             omci = np.multiply(omc, right_hemi)
             omci[omci>0] = 1
             area_mask = omci
-            print(area_mask.shape)
+            print(area_mask[0][0])
         if areas[j] == "OMCc":
             mos = make_mask("MOs", steg_reg_atlas)
             mop = make_mask("MOp", steg_reg_atlas)
