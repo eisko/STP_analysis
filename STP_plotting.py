@@ -135,27 +135,32 @@ def plot_contour(images, mask_dict, masks_to_plot, roi=None,
 
     # transform/rotate data
     im_tr = [np.transpose(im, transform) for im in images]
-    mask_tr = mask_dict.copy()
+    mask_tr = mask_dict.deepcopy()
     for area in mask_tr:
         if type(mask_tr[area])==list:
             for i in range(len(mask_tr[area])):
-                mask_tr[area][i] = np.transpose(mask_dict[area][i], transform)
+                mask_tr[area][i] = np.transpose(mask_tr[area][i], transform)
         else:
             for i in range(len(mask_tr[area])):
-                mask_tr[area] = np.transpose(mask_dict[area], transform)
+                mask_tr[area] = np.transpose(mask_tr[area], transform)
 
-
-    mask_out = mask_tr.copy()
-    if type(mask_tr[roi]==list):
-        mask_out[roi] = mask_tr[roi][0]
-    # create outline of max project slice
-    outline = make_boundaries_dict(plot_areas=masks_to_plot, mask_dict=mask_out, roi=roi)
-    
     # slice outline
     if roi:
         roi_mask = mask_tr[roi]
+        if type(roi_mask)==list:
+            roi_plot = roi_mask[0]
+        else:
+            roi_plot = roi_mask
     else:
         roi_mask = mask_tr['grey']
+        roi_plot = roi_mask
+
+    mask_tr['roi'] = roi_mask
+    mask_tr['roi_plot'] = roi_plot
+
+
+    # create outline of max project slice
+    outline = make_boundaries_dict(plot_areas=masks_to_plot, mask_dict=mask_tr, roi="roi_plot")
 
     fig, axs = plt.subplots()
 
@@ -207,7 +212,7 @@ def plot_contour_species(mm_image, st_image, mask_dict, plot_areas, roi,
     # transform/rotate data
     st_image = np.transpose(st_image, transform)
     mm_image = np.transpose(mm_image, transform)
-    mask_transpose = mask_dict.copy()
+    mask_transpose = mask_dict.deepcopy()
     for mask in mask_transpose:
         mask_transpose[mask] = np.transpose(mask_dict[mask], transform)
 
