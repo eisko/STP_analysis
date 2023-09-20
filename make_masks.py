@@ -31,7 +31,7 @@ steg_reg_hemi = io.imread(in_path+"registered_hemispheres_RESIZED.tif", plugin="
 # atlas_label = ["STeg_220429", "MMus_220303"]
 
 # areas to generate masks for
-areas = ["grey", "CTX", "OMCi", "OMCc", "ACAc", "aud","TH", "STR", "CP", "AMY", "P", "PG", "MB", "PAG", "SCm", 
+areas = ["grey", "CTX", "OMCi", "OMCc", "ACAi", "ACAc", "aud","TH", "STR", "CP", "AMY", "P", "PG", "MB", "PAG", "SCm", 
          "SNr", "HY", "CNU", "TEa", "ECT", "VISC", "AI", "GU", "BS", "HIP"]
 
 
@@ -65,6 +65,12 @@ for j in range(len(areas)):
             omcc = np.multiply(omc, left_hemi)
             omcc[omcc>0] = 1
             area_mask = omcc
+        elif areas[j] == "ACAi":
+            aca = make_mask("ACA", steg_reg_atlas)
+            right_hemi = steg_reg_hemi==2
+            acai = np.multiply(aca, right_hemi)
+            acai[acai>0] = 1
+            area_mask = acai
         elif areas[j] == "ACAc":
             aca = make_mask("ACA", steg_reg_atlas)
             left_hemi = steg_reg_hemi==1
