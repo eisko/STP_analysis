@@ -3,7 +3,7 @@ import pandas as pd
 import tifffile as tf
 
 # take aligned files, subtract mean background intensity value
-align_brain = "STeg_220429"
+align_brain = "MMus_220303"
 
 # define home dir
 home_dir = "/mnt/labNAS/"
@@ -25,8 +25,10 @@ n_files = meta.shape[0]
 
 for i in range(n_files):
     print('working on', meta.loc[i, "brain"])
+    
+    ########### MUST CHANGE BASED ON ALIGNED BRAIN #########
     # read in file
-    im_path = in_path+meta.loc[i,"brain"]+"_brainreg_STeg_220429/downsampled_standard.tiff"
+    im_path = in_path+meta.loc[i,"brain"]+"_brainreg_"+align_brain+"/downsampled_standard.tiff"
 
     im = tf.imread(im_path)
     # subtract mean value
