@@ -67,7 +67,8 @@ def make_mask(roi, atlas_in):
 
         return(mask_out)
     
-def make_boundaries(plot_areas, mask_list, mask_list_order=areas, roi=None, slice=None, scaling_factor=1000, boundary_mode="thick"):
+def make_boundaries(plot_areas, mask_list, mask_list_order=areas, roi=None, slice=None, 
+                    scaling_factor=1000, boundary_mode="thick"):
     """_summary_
 
     Args:
@@ -138,7 +139,8 @@ def make_boundaries(plot_areas, mask_list, mask_list_order=areas, roi=None, slic
 
     return(boundaries_scaled)
 
-def make_boundaries_dict(plot_areas, mask_dict, roi=None, slice=None, scaling_factor=1000, boundary_mode="thick"):
+def make_boundaries_dict(plot_areas, mask_dict, roi=None, slice=None, 
+                         scaling_factor=1000, boundary_mode="thick", view="front"):
     """_summary_
 
     Args:
@@ -150,6 +152,7 @@ def make_boundaries_dict(plot_areas, mask_dict, roi=None, slice=None, scaling_fa
                                 Defaults to 1000
         boudnary_mode (str, optional): mode used to make boundaries, inherited from skimage.segmentation.find_boudnaries
                             Defaults to "thick"
+        view (str, optional): If given, transpose masks to match view, can be ["top", "side", "front"]. Defaults to front.
 
     Returns:
         _type_: _description_
@@ -184,6 +187,19 @@ def make_boundaries_dict(plot_areas, mask_dict, roi=None, slice=None, scaling_fa
 
     # set bounds for every mask
     masks = [m[start:end] for m in masks]
+
+
+    # transpose masks 
+    if view=="front":
+        transform = (0,1,2)
+    elif view=="side":
+        transform = (2,1,0)
+    elif view=="top":
+        transform = (1,0,2)
+
+    masks = [np.transpose(m, transform) for m in masks]
+
+
 
 
     # 2. max project all masks after setting bounds
