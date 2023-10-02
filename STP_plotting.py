@@ -5,6 +5,7 @@ from STP_processing import *
 from colormaps import *
 from scipy.ndimage import gaussian_filter # for applying gaussian filter for density plots
 import math # needed for sqrt for ci95
+import copy # needed to deepcopy dictionary
 
 # from make_masks import areas
 
@@ -135,7 +136,7 @@ def plot_contour(images, mask_dict, masks_to_plot, roi=None,
 
     # transform/rotate data
     im_tr = [np.transpose(im, transform) for im in images]
-    mask_tr = mask_dict.deepcopy()
+    mask_tr = copy.deepcopy(mask_dict)
     for area in mask_tr:
         if type(mask_tr[area])==list:
             for i in range(len(mask_tr[area])):
@@ -212,7 +213,7 @@ def plot_contour_species(mm_image, st_image, mask_dict, plot_areas, roi,
     # transform/rotate data
     st_image = np.transpose(st_image, transform)
     mm_image = np.transpose(mm_image, transform)
-    mask_transpose = mask_dict.deepcopy()
+    mask_transpose = copy.deepcopy(mask_dict)
     for mask in mask_transpose:
         mask_transpose[mask] = np.transpose(mask_dict[mask], transform)
 
