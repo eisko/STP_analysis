@@ -142,8 +142,7 @@ def plot_contour(images, mask_dict, masks_to_plot, roi=None,
             for i in range(len(mask_tr[area])):
                 mask_tr[area][i] = np.transpose(mask_tr[area][i], transform)
         else:
-            for i in range(len(mask_tr[area])):
-                mask_tr[area] = np.transpose(mask_tr[area], transform)
+            mask_tr[area] = np.transpose(mask_tr[area], transform)
 
     # slice outline
     if roi:

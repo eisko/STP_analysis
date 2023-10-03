@@ -12,10 +12,10 @@ start = time()
 
 # for acadia!
 home_dir="/mnt/labNAS/"
-in_path = "/mnt/labNAS/Emily/STP_for_MAPseq/3_brainreg_output/OMC_STeg_220429_b2_hand_straightened_asr_aligned_10um/"
-out_path = "/mnt/labNAS/Emily/STP_for_MAPseq/4_python_output/input_tifs/masks/steg_220429_hs_asr/"
+in_path = "/mnt/labNAS/Emily/STP_for_MAPseq/3_brainreg_output/OMC_MMus_220303_hand_straightened_asr_aligned_10um/"
+out_path = "/mnt/labNAS/Emily/STP_for_MAPseq/4_python_output/input_tifs/masks/MMus_220303_hs_asr/"
 
-atlas_label = "steg_220429_hs_asr"
+atlas_label = "MMus_220303_hs_asr"
 
 # load atlases
 steg_reg_atlas = io.imread(in_path+"registered_atlas_RESIZED.tif", plugin="tifffile")
@@ -52,7 +52,7 @@ for j in range(len(areas)):
         if areas[j] == "OMCi":
             mos = make_mask("MOs", steg_reg_atlas)
             mop = make_mask("MOp", steg_reg_atlas)
-            right_hemi = steg_reg_hemi==2
+            right_hemi = steg_reg_hemi==1
             omc = np.add(mos,mop)
             omci = np.multiply(omc, right_hemi)
             omci[omci>0] = 1
@@ -60,20 +60,20 @@ for j in range(len(areas)):
         elif areas[j] == "OMCc":
             mos = make_mask("MOs", steg_reg_atlas)
             mop = make_mask("MOp", steg_reg_atlas)
-            left_hemi = steg_reg_hemi==1
+            left_hemi = steg_reg_hemi==2
             omc = np.add(mos,mop)
             omcc = np.multiply(omc, left_hemi)
             omcc[omcc>0] = 1
             area_mask = omcc
         elif areas[j] == "ACAi":
             aca = make_mask("ACA", steg_reg_atlas)
-            right_hemi = steg_reg_hemi==2
+            right_hemi = steg_reg_hemi==1
             acai = np.multiply(aca, right_hemi)
             acai[acai>0] = 1
             area_mask = acai
         elif areas[j] == "ACAc":
             aca = make_mask("ACA", steg_reg_atlas)
-            left_hemi = steg_reg_hemi==1
+            left_hemi = steg_reg_hemi==2
             acac = np.multiply(aca, left_hemi)
             acac[acac>0] = 1
             area_mask = acac
