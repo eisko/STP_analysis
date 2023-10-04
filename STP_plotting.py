@@ -14,8 +14,8 @@ areas = ["grey", "CTX", "OMCc", "ACAc", "aud","TH", "STR", "CP", "AMY", "P", "PG
          "SNr", "HY", "CNU", "TEa", "ECT", "VISC", "AI", "GU", "BS"]
 
 
-def slice_to_contour(stp_image, mask, slice_range=None, slice=None, output="contour", gs=3, ar=1, cmap=green_cmp,
-                     alpha=0.75):
+def slice_to_contour(stp_image, mask, slice_range=None, slice=None, output="contour", gs=3, cmap=green_cmp,
+                     alpha=0.75, ncontours=8):
     """_summary_
 
     Args:
@@ -26,7 +26,9 @@ def slice_to_contour(stp_image, mask, slice_range=None, slice=None, output="cont
         output (str, optional): Can be 'maximum', 'guassian', or 'contour', will determine the output image.
                                 Defaults to 'contour'
         gs (int, optional): Sigma to be used for gaussian blurring. Defaults to 3.
-        ar (int, optional): aspect ratio for plot. Defaults to 1.
+        cmap (cmap, optional): Colormap to use to determine contour colors. Defaults to custum greeen_cmp.
+        alpha (float, optional): Opacity value for contour lines. Defaults to 0.75.
+        ncontours (int, optional): Number of contour lines to draw. Defaults to 8 (plt.contour default is 8).
     """
 
     # apply mask to stp_image
@@ -52,7 +54,7 @@ def slice_to_contour(stp_image, mask, slice_range=None, slice=None, output="cont
         return(blur)
     
     # else return controur plot
-    contour = plt.contour(blur, cmap=cmap, alpha=alpha)
+    contour = plt.contour(blur, ncontours, cmap=cmap, alpha=alpha)
     # ax.set_aspect(ar)
     # ax.axis('off')
 
@@ -111,7 +113,7 @@ def plot_contour_omc_acc(omc_image, acc_image, mask_list, masks_to_plot, roi,
     return(fig)
 
 def plot_contour(images, mask_dict, masks_to_plot, roi=None, 
-                 view="front", cmaps=None):
+                 view="front", cmaps=None, ncontours=8):
     """Plot contour map of max projection of up to 3 images
 
     Args:
@@ -121,6 +123,7 @@ def plot_contour(images, mask_dict, masks_to_plot, roi=None,
         roi (str, optional): Region of interest to apply mask and plot max projection. Defaults to None.
         view (str, optional): what view, can be 'front', 'side', or 'top'. Defaults to "front".
         cmaps (list, optional): list of cmaps to be used to distinguish images. Defaults to None.
+        ncontours (int, optional): Number of contour lines to draw. Dafaults to 8 (plt.contour default).
     """
 
     # set prarmeters
@@ -160,7 +163,9 @@ def plot_contour(images, mask_dict, masks_to_plot, roi=None,
 
 
     # create outline of max project slice
-    outline = make_boundaries_dict(plot_areas=masks_to_plot, mask_dict=mask_tr, roi="roi_plot")
+    # outline = make_boundaries_dict(plot_areas=masks_to_plot, mask_dict=mask_tr, roi="roi_plot")
+    outline = make_boundaries_dict(plot_areas=masks_to_plot, mask_dict=mask_tr)
+
 
     fig, axs = plt.subplots()
 
@@ -171,10 +176,10 @@ def plot_contour(images, mask_dict, masks_to_plot, roi=None,
 
     if type(roi_mask)==list:
         for i in range(len(images)):
-            slice_to_contour(im_tr[i], roi_mask[i], cmap=colors[i])
+            slice_to_contour(im_tr[i], roi_mask[i], cmap=colors[i], ncontours=ncontours)
     else:
         for i in range(len(images)):
-            slice_to_contour(im_tr[i], roi_mask, cmap=colors[i])
+            slice_to_contour(im_tr[i], roi_mask, cmap=colors[i], ncontours=ncontours)
 
     axs.set_aspect(ar)
     axs.axis('off')

@@ -109,7 +109,7 @@ def make_boundaries(plot_areas, mask_list, mask_list_order=areas, roi=None, slic
             end = slices_n[roi_idx].max()
     else:
         start = 0
-        end = 201
+        end = mask_list[0].shape[0]
 
     # set bounds for every mask
     masks = [m[start:end] for m in masks]
@@ -180,7 +180,7 @@ def make_boundaries_dict(plot_areas, mask_dict, roi=None, slice=None,
             end = slices_n[roi_idx].max()
     else:
         start = 0
-        end = 201
+        end = mask_dict[plot_areas[0]].shape[0]
 
     # set order for masks
     masks = [mask_dict[area] for area in plot_areas]
