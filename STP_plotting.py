@@ -328,11 +328,20 @@ def stvmm_area_scatter(data, title="", to_plot="Fluorescence", log=True,
 
     return(fig)
 
-def volcano_plot(df, x="log2_fc", y="nlog10_p", title=None, labels="area", p_05=True, p_01=True, p_bf=None):
+def volcano_plot(df, x="log2_fc", y="nlog10_p", title=None, labels="area", p_05=True, 
+                 p_01=True, p_bf=None, xlim=None, ylim=None):
     """output volcano plot based on comparison of species proportional means
 
     Args:
         df (pd.DataFrame): output of proprotion_ttest
+        x (str, optional): name of column to go on x axis. Defaults to "log2_fc".
+        y (str, optional): Column to plot on y. Defaults to "nlog10_p".
+        title (str, optional): what to put as title. Defaults to None.
+        labels (str, optional): Column to use to label each point. Defaults to "area".
+        p_05 (bool, optional): Determines whether to plot line at p(0.05). Defaults to True.
+        p_01 (bool, optional): Determines whether to plot line at p(0.01). Defaults to True.
+        p_bf (int, optional): Takes integer used as berforroni correction threshold. Defaults to None.
+
     """
 
     # areas = sorted(df['area'].unique())
@@ -343,8 +352,10 @@ def volcano_plot(df, x="log2_fc", y="nlog10_p", title=None, labels="area", p_05=
     y=df[y]
 
     plt.scatter(x,y, s=25)
-    # plt.xlim([-1,1])
-    # plt.ylim([-0.1,4])
+    if xlim:
+        plt.xlim(xlim)
+    if ylim:
+        plt.ylim([-0.1,4])
     # plot 0 axes
     plt.axline((0, 0), (0, 1),linestyle='--', linewidth=0.5)
     plt.axline((0, 0), (1, 0),linestyle='--', linewidth=0.5)
@@ -367,7 +378,7 @@ def volcano_plot(df, x="log2_fc", y="nlog10_p", title=None, labels="area", p_05=
 
 
     plt.title(title)
-    plt.xlabel('log2(fold change)')
+    plt.xlabel('log2(st_mean/mm_mean)')
     plt.ylabel('-log10(p-value)')
 
     return(fig)

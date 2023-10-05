@@ -8,6 +8,7 @@ from skimage import io # import tiff file as ndarray
 from skimage.segmentation import find_boundaries # for generating boundaries
 import os
 from scipy import stats
+import math
 
 # from make_masks import areas
 
@@ -338,6 +339,8 @@ def df_ttest(df, test_vals="Fluorescence"):
 
     Args:
         df (pd.DataFrame): output of dfs_to_proportions
+        test_vals (str, optional): name of column to do ttest comparison.
+                                    Defaults to "Fluorescence".
     """
 
     areas = sorted(df['area'].unique())
@@ -363,3 +366,40 @@ def df_ttest(df, test_vals="Fluorescence"):
     plot["nlog10_p"] = -np.log10(plot["p-value"])
 
     return(plot)
+
+
+def compare_groups(data, group1="MMus", group2="STeg", compare_group="species",
+                   to_compare="Fluorescence", label="inter"):
+    """Given data calculate differences between individual points among/within species,
+    on a per area basis
+
+    Args:
+        data (DataFrame): pd.DataFrame, output of dfs_to_proportions()
+        group1 (str, optional): Species to compare to. Defaults to "MMus".
+        group2 (str, optional): Other species to compare. Defaults to "STeg".
+        compare_group (str, optional): column that contains groups to compare. Defaults to "species".
+        to_compare (str, optional): value to compare. Defaults to "Fluorescence".
+        label (str, optional): Label of intra/inter comparison. Defautls to "inter".
+    """
+
+    df1 = data[data[compare_group]==group1]
+    df2 = data[data[compare_group]==group2]
+
+    areas = data['area'].unique()
+
+    out_df = pd.DataFrame(columns=['area', to_compare+'_diff', compare_group, 'brain', 'label'])
+
+    for area in areas:
+        
+        df1a = df1[df1['area']==area].reset_index(drop=True)
+        df2a = df2[df2['area']==area].reset_index(drop=True)
+        
+        for a in range(df1a.shape[0]):
+            for b in range(df2a.shape[0]):
+                diff = df1a.loc[a, to_compare] - df2a.loc[b, to_compare]
+                abs_diff = math.sqrt(diff**2)
+                row = [area, abs_diff, group1+"_"+group2, df1a.loc[a, 'brain']+"_"+df2a.loc[b,'brain'], label]
+                i = out_df.shape[0]
+                out_df.loc[i, :] = row
+                
+    return(out_df)

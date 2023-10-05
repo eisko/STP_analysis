@@ -5,8 +5,16 @@ import os
 import numpy as np
 import pandas as pd
 import tifffile as tf # import tiff file as ndarray
-from STP_processing import make_mask
 from time import time
+
+import sys
+
+sys.path.append("/home/emily/github_repos/STP_analysis/")
+
+home_dir = "/home/emily/github_repos/STP_analysis/"
+
+from STP_processing import make_mask
+
 
 
 def create_output_folder(output_directory, folder_name):
@@ -23,14 +31,14 @@ def create_output_folder(output_directory, folder_name):
 start = time()
 
 # import metadata
-metadata = pd.read_csv("stp_metadata.csv")
+metadata = pd.read_csv(home_dir+"stp_metadata.csv")
 
 # for acadia!
 in_path = "/mnt/labNAS/Emily/STP_for_MAPseq/4_python_output/input_tifs/resized_atlases/"
 out_path = "/mnt/labNAS/Emily/STP_for_MAPseq/4_python_output/input_tifs/masks/"
 
 # areas to generate masks for
-areas = ["grey", "CTX", "OMCc", "ACAc", "aud","TH", "STR", "CP", "AMY", "P", "PG", "MB", "PAG", "SCm", 
+areas = ["grey", "CTX", "OMCi", "OMCc", "ACAi", "ACAc", "aud","TH", "STR", "CP", "AMY", "P", "PG", "MB", "PAG", "SCm", 
          "SNr", "HY", "CNU", "TEa", "ECT", "VISC", "AI", "GU", "BS", "HIP"]
 
 # create masks for every brain
@@ -61,7 +69,15 @@ for i in range(len(atlases)):
         else:
             
             # define special cases
-            if areas[j] == "OMCc":
+            if areas[j] == "OMCi":
+                mos = make_mask("MOs", atlases[i])
+                mop = make_mask("MOp", atlases[i])
+                left_hemi = hemis[i]==2
+                omc = np.add(mos,mop)
+                omci = np.multiply(omc, left_hemi)
+                omci[omci>0] = 1
+                area_mask = omci
+            elif areas[j] == "OMCc":
                 mos = make_mask("MOs", atlases[i])
                 mop = make_mask("MOp", atlases[i])
                 left_hemi = hemis[i]==1
@@ -69,6 +85,12 @@ for i in range(len(atlases)):
                 omcc = np.multiply(omc, left_hemi)
                 omcc[omcc>0] = 1
                 area_mask = omcc
+            elif areas[j] == "ACAi":
+                aca = make_mask("ACA", atlases[i])
+                left_hemi = hemis[i]==2
+                acai = np.multiply(aca, left_hemi)
+                acai[acai>0] = 1
+                area_mask = acai
             elif areas[j] == "ACAc":
                 aca = make_mask("ACA", atlases[i])
                 left_hemi = hemis[i]==1
