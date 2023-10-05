@@ -333,7 +333,8 @@ def normalize_by_area(df_fluor, norm_area):
 
     return output
 
-def df_ttest(df, test_vals="Fluorescence"):
+def df_ttest(df, test_vals="Fluorescence", compare_group="species",
+             group1="STeg", group2="MMus"):
     """output dataframe based on comparison of species proportional means
         output dataframe can be used for making volcano plot
 
@@ -349,19 +350,19 @@ def df_ttest(df, test_vals="Fluorescence"):
     #     area_df = df[df['area']==area]
     #     mean = df.groupby('area', sort = False, as_index=False)['proportion'].mean()
 
-    mmus_df = df[df["species"]=="MMus"]
-    mmus_array = mmus_df.pivot(columns='brain', values=test_vals, index='area').values
+    g1_df = df[df[compare_group]==group1]
+    g1_array = g1_df.pivot(columns='brain', values=test_vals, index='area').values
 
-    steg_df = df[df["species"]=="STeg"]
-    steg_array = steg_df.pivot(columns='brain', values=test_vals, index='area').values
+    g2_df = df[df[compare_group]==group2]
+    g2_array = g2_df.pivot(columns='brain', values=test_vals, index='area').values
 
-    results = stats.ttest_ind(mmus_array, steg_array, axis=1)
+    results = stats.ttest_ind(g1_array, g2_array, axis=1)
     p_vals = results[1]
     plot = pd.DataFrame({"area":areas, "p-value":p_vals})
-    plot["mm_mean"] = mmus_array.mean(axis=1)
-    plot["st_mean"] = steg_array.mean(axis=1)
+    plot[group1+"_mean"] = g1_array.mean(axis=1)
+    plot[group2+"_mean"] = g2_array.mean(axis=1)
     # plot["effect_size"] = (plot["st_mean"]-plot["mm_mean"]) / (plot["st_mean"] + plot["mm_mean"]) # modulation index
-    plot["fold_change"] = plot["st_mean"]/(plot["mm_mean"])
+    plot["fold_change"] = plot[group1+"_mean"]/(plot[group2+"_mean"])
     plot["log2_fc"] = np.log2(plot["fold_change"])
     plot["nlog10_p"] = -np.log10(plot["p-value"])
 

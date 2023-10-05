@@ -328,6 +328,83 @@ def stvmm_area_scatter(data, title="", to_plot="Fluorescence", log=True,
 
     return(fig)
 
+def area_scatter(data, title="", to_plot="Fluorescence", log=True, 
+                       err="sem", ax_limits=None, compare_group="species",
+                       xgroup="STeg", ygroup="MMus", xcolor="black",
+                       ycolor="black"):
+    """Plots by area, group1 mean vs. group 2 mean, with xy error bars
+
+    Args:
+        data (pandas.dataframe): output of calc_fluor
+        to_plot (str, optional): Label of column in data to plot. Defaults to "Fluorescence".
+        log (bool, optional): Determine whether axis on log sale or not. Defaults to True.
+        err (str, optional): What to use as error bars, i.e. "sem", "ci95", "std". Defaults to "sem".
+        ax_limits (tuple, optional): what axis limits to use. Defaults to None.
+        compare_group (str, optional): what column to use as 2 comparison groups. Defaults to "species".
+        xgroup (str, optional): group to plot on x axis. Defaults to "STeg".
+        ygroup (str, optional): grou pto plot on y axis. Defaults to "MMus".
+        xcolor (str, optional): color for x error bars. Defaults to 'orange'.
+        ycolor (str, optional): color for y error bars. Defaults to None (which plots blue).
+    """
+
+    # separate by species
+    data_x = data[data[compare_group]==xgroup]
+    data_y = data[data[compare_group]==ygroup]
+
+    # calculate stats
+    x_stats = data_x.groupby(["area"])[to_plot].agg(['mean', 'count', 'std', 'sem'])
+    y_stats = data_y.groupby(["area"])[to_plot].agg(['mean', 'count', 'std', 'sem'])
+
+    ci95 = []
+    for i in x_stats.index:
+        m, c, sd, se = x_stats.loc[i]
+        ci95.append(1.96*sd/math.sqrt(c))
+    x_stats['ci95'] = ci95
+
+    ci95 = []
+    for i in y_stats.index:
+        m, c, sd, se = y_stats.loc[i]
+        ci95.append(1.96*sd/math.sqrt(c))
+    y_stats['ci95'] = ci95
+
+    fig = plt.subplot()
+
+    plt.errorbar(x_stats['mean'], y_stats['mean'], 
+            xerr=x_stats[err], fmt='|', color=xcolor)
+    plt.errorbar(x_stats['mean'], y_stats['mean'], 
+            yerr=y_stats[err], fmt='|', color=ycolor)
+
+    # add area labels
+    labels = list(x_stats.index)
+    for i in range(len(labels)):
+        plt.annotate(labels[i], (x_stats['mean'][i], y_stats['mean'][i]))
+    
+    # set x and y lims so that starts at 0,0
+    if ax_limits:
+        plt.xlim(ax_limits)
+        plt.ylim(ax_limits)
+
+
+    # adjust scale
+    if log:
+        plt.xscale("log")
+        plt.yscale("log")
+
+    # plot unity line
+    x = np.linspace(0,20000, 5)
+    y = x
+    plt.plot(x, y, color='red', linestyle="--", linewidth=0.5)
+
+
+    # add axis labels
+    plt.xlabel(xgroup+" "+to_plot, color=xcolor)
+    plt.ylabel(ygroup+" "+to_plot, color=ycolor)
+
+    # add title
+    plt.title(title)
+
+    return(fig)
+
 def volcano_plot(df, x="log2_fc", y="nlog10_p", title=None, labels="area", p_05=True, 
                  p_01=True, p_bf=None, xlim=None, ylim=None):
     """output volcano plot based on comparison of species proportional means
@@ -378,7 +455,7 @@ def volcano_plot(df, x="log2_fc", y="nlog10_p", title=None, labels="area", p_05=
 
 
     plt.title(title)
-    plt.xlabel('log2(st_mean/mm_mean)')
+    plt.xlabel('log2(fold change)')
     plt.ylabel('-log10(p-value)')
 
     return(fig)
