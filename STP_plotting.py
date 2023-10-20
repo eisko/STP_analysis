@@ -262,7 +262,8 @@ def dot_bar_plot(df, title="", xaxis="Area", yaxis="Integrated Fluorescence", hu
     return(fig)
 
 def stvmm_area_scatter(data, title="", to_plot="Fluorescence", log=True, 
-                       err="sem", ax_limits=None):
+                       err="sem", ax_limits=None, xlabel="Singing Mouse Integrated Fluorescence",
+                       ylabel="Lab Mouse Integrated Fluorescence"):
     """Plots lab mouse v. singing moues scatter w/ unity line
 
     Args:
@@ -320,8 +321,8 @@ def stvmm_area_scatter(data, title="", to_plot="Fluorescence", log=True,
 
 
     # add axis labels
-    plt.xlabel("Singing Mouse Integrated Fluorescence", color="tab:orange")
-    plt.ylabel("Lab Mouse Integrated Fluorescence", color="tab:blue")
+    plt.xlabel(xlabel, color="tab:orange")
+    plt.ylabel(ylabel, color="tab:blue")
 
     # add title
     plt.title(title)
