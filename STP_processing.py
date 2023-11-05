@@ -9,6 +9,8 @@ from skimage.segmentation import find_boundaries # for generating boundaries
 import os
 from scipy import stats
 import math
+from matplotlib.colors import ListedColormap
+
 
 # from make_masks import areas
 
@@ -404,3 +406,22 @@ def compare_groups(data, group1="MMus", group2="STeg", compare_group="species",
                 out_df.loc[i, :] = row
                 
     return(out_df)
+
+def create_cmap(red, green, blue):
+    """create custum linear cmap given RGB values of saturated color
+
+    Args:
+        red (int): Can be 0-255
+        green (int): Can be 0-255
+        blue (int): Can be 0-255
+    """
+
+    N = 256
+    color = np.ones((N,4))
+    color[:, 0] = np.linspace(1, red/256, N)
+    color[:, 1] = np.linspace(1, green/256, N)
+    color[:, 2] = np.linspace(1, blue/256, N)
+
+    color_cmp = ListedColormap(color)
+    
+    return(color_cmp)

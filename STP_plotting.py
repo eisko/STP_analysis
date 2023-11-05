@@ -113,7 +113,7 @@ def plot_contour_omc_acc(omc_image, acc_image, mask_list, masks_to_plot, roi,
     return(fig)
 
 def plot_contour(images, mask_dict, masks_to_plot, roi=None, 
-                 view="front", cmaps=None, ncontours=8):
+                 view="front", cmaps=None, ncontours=8, alpha=0.75, gs=3):
     """Plot contour map of max projection of up to 3 images
 
     Args:
@@ -147,7 +147,7 @@ def plot_contour(images, mask_dict, masks_to_plot, roi=None,
         else:
             mask_tr[area] = np.transpose(mask_tr[area], transform)
 
-    # slice outline
+    # roi/slice outline
     if roi:
         roi_mask = mask_tr[roi]
         if type(roi_mask)==list:
@@ -176,10 +176,12 @@ def plot_contour(images, mask_dict, masks_to_plot, roi=None,
 
     if type(roi_mask)==list:
         for i in range(len(images)):
-            slice_to_contour(im_tr[i], roi_mask[i], cmap=colors[i], ncontours=ncontours)
+            slice_to_contour(im_tr[i], roi_mask[i], cmap=colors[i], ncontours=ncontours,
+                             alpha=alpha, gs=gs)
     else:
         for i in range(len(images)):
-            slice_to_contour(im_tr[i], roi_mask, cmap=colors[i], ncontours=ncontours)
+            slice_to_contour(im_tr[i], roi_mask, cmap=colors[i], ncontours=ncontours,
+                             alpha=alpha, gs=gs)
 
     axs.set_aspect(ar)
     axs.axis('off')
