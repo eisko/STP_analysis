@@ -6,6 +6,8 @@ from colormaps import *
 from scipy.ndimage import gaussian_filter # for applying gaussian filter for density plots
 import math # needed for sqrt for ci95
 import copy # needed to deepcopy dictionary
+from matplotlib.lines import Line2D # for custom legend
+
 
 # from make_masks import areas
 
@@ -460,5 +462,55 @@ def volcano_plot(df, x="log2_fc", y="nlog10_p", title=None, labels="area", p_05=
     plt.title(title)
     plt.xlabel('log2(fold change)')
     plt.ylabel('-log10(p-value)')
+
+    return(fig)
+
+def dot_plot_by_species(data, area=None, title=None, err="se", add_legend=True,
+                              to_plot="Fluorescence", ylim=(0)):
+    """Plot individual values, mean, and error by species in dot plot.
+
+    Args:
+        df (DataFrame): Output from calc_fluor_individ()
+        area (str): area to plot
+        err (str): error bar to plot for sns.pointplot(), can be "ci", "pi", "se", or "sd". Defaults to "se".
+        title (str): Title to apply to plot
+        add_legend (bool, optional): Specify whether to include legend or not. Defaults to True.
+        to_plot (str, optional): what column name to plot. Defaults to "Fluorescence".
+        ylim (int, optional): Lower bound for yaxis. Defaults to (0).
+    """
+
+    if area:
+        df = data[data["area"]==area]
+    else:
+        df = data.copy()
+
+    # means = area_df.groupby('species')['proportion'].mean() # need means for plotting lines
+
+    fig, ax = plt.subplots()
+
+    strip = sns.stripplot(data=df, x="species", y=to_plot, hue="species", size=10, ax=ax)
+    # violin = sns.violinplot(area_df, x='species',y="proportion",
+    #             split=True, hue ='species', inner = None, 
+    #             palette="pastel",legend=False)
+    point = sns.pointplot(data=df, x="species", y=to_plot, hue="species", units='brain', 
+                          color='black', markers='+', ax=ax, errorbar=err) # plots mean and 95 confidence interval:
+
+    # mm_line = mlines.Line2D([0, 1], [means["MMus"], means["MMus"]], color=blue_cmp.colors[150])
+    # st_line = mlines.Line2D([0, 1], [means["STeg"], means["STeg"]], color=orange_cmp.colors[150])
+    
+    # ax.add_line(mm_line)
+    # ax.add_line(st_line)
+
+    plt.title(title, size=20)
+    plt.ylim(ylim) # make sure y axis starts at 0
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
+
+    if add_legend:
+        legend = Line2D([], [], color="black", marker="+", linewidth=0, label="mean, "+err)
+        plt.legend(handles=[legend], loc="lower right")
+    else:
+        plt.legend([],[], frameon=False)
+
 
     return(fig)
