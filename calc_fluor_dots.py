@@ -32,7 +32,7 @@ for i in range(metadata.shape[0]):
     metadata.loc[i,"p05_path"] = b_path
 
 # area list from make_masks.py
-areas = ["OMCi", "OMCc", "aud","TH", "STR", "CP", "AMY", "P", "PG", "PAG", "SCm", 
+areas = ["OMCi", "OMCc", "aud","TH", "STR", "CP", "AMY", "HY","P", "PG", "PAG", "SCm", 
          "SNr", "BS"]
 
 # load masks for each individually aligned brain
