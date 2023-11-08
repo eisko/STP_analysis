@@ -7,7 +7,8 @@ from scipy.ndimage import gaussian_filter # for applying gaussian filter for den
 import math # needed for sqrt for ci95
 import copy # needed to deepcopy dictionary
 from matplotlib.lines import Line2D # for custom legend
-
+plt.rcParams['pdf.fonttype'] = 42 # to ensure editable text 
+plt.rcParams['ps.fonttype'] = 42 # to ensure editable text 
 
 # from make_masks import areas
 
@@ -466,7 +467,7 @@ def volcano_plot(df, x="log2_fc", y="nlog10_p", title=None, labels="area", p_05=
     return(fig)
 
 def dot_plot_by_species(data, area=None, title=None, err="se", add_legend=True,
-                              to_plot="Fluorescence", ylim=(0)):
+                              to_plot="Fluorescence", ylabel="Fluorescence", ylim=(0), fig_size=(3.5,3.5)):
     """Plot individual values, mean, and error by species in dot plot.
 
     Args:
@@ -488,12 +489,19 @@ def dot_plot_by_species(data, area=None, title=None, err="se", add_legend=True,
 
     fig, ax = plt.subplots()
 
-    strip = sns.stripplot(data=df, x="species", y=to_plot, hue="species", size=10, ax=ax)
+    sns.stripplot(data=df, x="species", y=to_plot, hue="species", size=12, ax=ax)
     # violin = sns.violinplot(area_df, x='species',y="proportion",
     #             split=True, hue ='species', inner = None, 
     #             palette="pastel",legend=False)
-    point = sns.pointplot(data=df, x="species", y=to_plot, hue="species", units='brain', 
+    pts = sns.pointplot(data=df, x="species", y=to_plot, hue="species", units='brain', 
                           color='black', markers='+', ax=ax, errorbar=err) # plots mean and 95 confidence interval:
+
+    # necessary to put mean/error markers on top
+    plt.setp(pts.lines, zorder=100)
+    plt.setp(pts.collections, zorder=100, label="")
+
+    # needed to prevent cut-off of dots near top of graph
+    plt.margins(0.15)
 
     # mm_line = mlines.Line2D([0, 1], [means["MMus"], means["MMus"]], color=blue_cmp.colors[150])
     # st_line = mlines.Line2D([0, 1], [means["STeg"], means["STeg"]], color=orange_cmp.colors[150])
@@ -501,10 +509,19 @@ def dot_plot_by_species(data, area=None, title=None, err="se", add_legend=True,
     # ax.add_line(mm_line)
     # ax.add_line(st_line)
 
-    plt.title(title, size=20)
+    plt.title(title, size=24)
     plt.ylim(ylim) # make sure y axis starts at 0
+    plt.xlabel(None)
+    plt.ylabel(ylabel)
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
+
+    # increase text size
+    plt.rcParams.update({'font.size': 12})
+
+    # set figure size
+    fig = plt.gcf()
+    fig.set_size_inches(fig_size[0],fig_size[1])
 
     if add_legend:
         legend = Line2D([], [], color="black", marker="+", linewidth=0, label="mean, "+err)
