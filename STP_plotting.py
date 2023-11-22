@@ -18,7 +18,7 @@ areas = ["grey", "CTX", "OMCc", "ACAc", "aud","TH", "STR", "CP", "AMY", "P", "PG
 
 
 def slice_to_contour(stp_image, mask, slice_range=None, slice=None, output="contour", gs=3, cmap=green_cmp,
-                     alpha=0.75, ncontours=8):
+                     alpha=0.75, ncontours=8, linewidths=1):
     """_summary_
 
     Args:
@@ -57,7 +57,7 @@ def slice_to_contour(stp_image, mask, slice_range=None, slice=None, output="cont
         return(blur)
     
     # else return controur plot
-    contour = plt.contour(blur, ncontours, cmap=cmap, alpha=alpha)
+    contour = plt.contour(blur, ncontours, cmap=cmap, alpha=alpha, linewidths=linewidths)
     # ax.set_aspect(ar)
     # ax.axis('off')
 
@@ -116,7 +116,7 @@ def plot_contour_omc_acc(omc_image, acc_image, mask_list, masks_to_plot, roi,
     return(fig)
 
 def plot_contour(images, mask_dict, masks_to_plot, roi=None, 
-                 view="front", cmaps=None, ncontours=8, alpha=0.75, gs=3):
+                 view="front", cmaps=None, ncontours=8, alpha=0.75, gs=3, linewidths=1):
     """Plot contour map of max projection of up to 3 images
 
     Args:
@@ -180,11 +180,11 @@ def plot_contour(images, mask_dict, masks_to_plot, roi=None,
     if type(roi_mask)==list:
         for i in range(len(images)):
             slice_to_contour(im_tr[i], roi_mask[i], cmap=colors[i], ncontours=ncontours,
-                             alpha=alpha, gs=gs)
+                             alpha=alpha, gs=gs, linewidths=linewidths)
     else:
         for i in range(len(images)):
             slice_to_contour(im_tr[i], roi_mask, cmap=colors[i], ncontours=ncontours,
-                             alpha=alpha, gs=gs)
+                             alpha=alpha, gs=gs, linewidths=linewidths)
 
     axs.set_aspect(ar)
     axs.axis('off')
