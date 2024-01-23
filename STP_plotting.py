@@ -7,8 +7,6 @@ from scipy.ndimage import gaussian_filter # for applying gaussian filter for den
 import math # needed for sqrt for ci95
 import copy # needed to deepcopy dictionary
 from matplotlib.lines import Line2D # for custom legend
-plt.rcParams['pdf.fonttype'] = 42 # to ensure editable text 
-plt.rcParams['ps.fonttype'] = 42 # to ensure editable text 
 
 # from make_masks import areas
 
@@ -250,29 +248,29 @@ def plot_contour(images, mask_dict, masks_to_plot, roi=None,
 
 #     # return(fig)
 
-def dot_bar_plot(df, title="", xaxis="Area", yaxis="Integrated Fluorescence", hueaxis="Species",
-                 errorbar="se"):
-    """
-    Function to take pandas dataframe and plot individual values and mean/sem values
-    Intent to use for plotting nodes by frequency (in fraction of neurons)
+# def dot_bar_plot(df, title="", xaxis="Area", yaxis="Integrated Fluorescence", hueaxis="Species",
+#                  errorbar="se"):
+#     """
+#     Function to take pandas dataframe and plot individual values and mean/sem values
+#     Intent to use for plotting nodes by frequency (in fraction of neurons)
 
-    Args:
-        df (pandas.core.frame.DataFrame): pandas dataframe where rows are nodes and columns are:
-         'Node Degreee', 'Normalized Frequency', 'Species', and 'mouse'
-         - See output of df_to_nodes
-        title (str): plot title
-    """
-    fig = plt.subplot()
-    sns.stripplot(df, x=xaxis, y=yaxis, hue=hueaxis, dodge=True, jitter=False, size=3)
-    t_ax = sns.barplot(df, x=xaxis, y=yaxis, hue=hueaxis, errorbar=errorbar, errwidth=1)
-    for patch in t_ax.patches:
-        clr = patch.get_facecolor()
-        patch.set_edgecolor(clr)
-        patch.set_facecolor((0,0,0,0))
-    plt.setp(t_ax.patches, linewidth=1)
-    plt.title(title, size=18)
+#     Args:
+#         df (pandas.core.frame.DataFrame): pandas dataframe where rows are nodes and columns are:
+#          'Node Degreee', 'Normalized Frequency', 'Species', and 'mouse'
+#          - See output of df_to_nodes
+#         title (str): plot title
+#     """
+#     fig = plt.subplot()
+#     sns.stripplot(df, x=xaxis, y=yaxis, hue=hueaxis, dodge=True, jitter=False, size=3)
+#     t_ax = sns.barplot(df, x=xaxis, y=yaxis, hue=hueaxis, errorbar=errorbar, errwidth=1)
+#     for patch in t_ax.patches:
+#         clr = patch.get_facecolor()
+#         patch.set_edgecolor(clr)
+#         patch.set_facecolor((0,0,0,0))
+#     plt.setp(t_ax.patches, linewidth=1)
+#     plt.title(title, size=18)
 
-    return(fig)
+#     return(fig)
 
 def stvmm_area_scatter(data, title="", to_plot="Fluorescence", log=True, 
                        err="sem", ax_limits=None, xlabel="Singing Mouse Integrated Fluorescence",
@@ -469,13 +467,14 @@ def volcano_plot(df, x="log2_fc", y="nlog10_p", title=None, labels="area", p_05=
 
 
     plt.title(title)
-    plt.xlabel('log2(fold change)')
-    plt.ylabel('-log10(p-value)')
+    plt.xlabel('$log_{2}$($\dfrac{STeg}{MMus}$)')
+    plt.ylabel('$-log_{10}(p\ value)$')
 
     return(fig)
 
 def dot_plot_by_species(data, area=None, title=None, err="se", add_legend=True,
-                              to_plot="Fluorescence", ylabel="Fluorescence", ylim=(0), fig_size=(3.5,3.5)):
+                              to_plot="Fluorescence", ylabel="Fluorescence", ylim=(0), 
+                              fig_size=(3.5,3.5)):
     """Plot individual values, mean, and error by species in dot plot.
 
     Args:
