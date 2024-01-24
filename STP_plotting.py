@@ -62,60 +62,60 @@ def slice_to_contour(stp_image, mask, slice_range=None, slice=None, output="cont
     return(contour)
 
 
-# def plot_contour_omc_acc(omc_image, acc_image, mask_list, masks_to_plot, roi, 
-#                  mask_list_order=areas, view="front", species="STeg"):
-#     """Plot contour map of max projection of roi
+def plot_contour_omc_acc(omc_image, acc_image, mask_list, masks_to_plot, roi, 
+                 mask_list_order=areas, view="front", species="STeg"):
+    """Plot contour map of max projection of roi
 
-#     Args:
-#         omc_image (np.array): 3D STP images for OMC injection
-#         acc_image (np.array): 3D STP images for ACC injection
-#         mask_list (list): list of masks
-#         masks_to_plot (list): list of strings specifying the areas to plot in outline, and the order the areas should be laid
-#         roi (str): Region of interest to apply mask and plot max projection
-#         view (str, optional): what view, can be 'front', 'side', or 'top'. Defaults to "front".
-#         species (str, optional): Specify species so get correct color for outline. Defaults to "STeg".
-#     """
-#     # set prarmeters
-#     if view=="front":
-#         ar = 1
-#         transform = (0,1,2)
-#     elif view=="side":
-#         ar = 1/2.5
-#         transform = (2,1,0)
-#     elif view=="top":
-#         ar=2.5
-#         transform = (1,0,2)
+    Args:
+        omc_image (np.array): 3D STP images for OMC injection
+        acc_image (np.array): 3D STP images for ACC injection
+        mask_list (list): list of masks
+        masks_to_plot (list): list of strings specifying the areas to plot in outline, and the order the areas should be laid
+        roi (str): Region of interest to apply mask and plot max projection
+        view (str, optional): what view, can be 'front', 'side', or 'top'. Defaults to "front".
+        species (str, optional): Specify species so get correct color for outline. Defaults to "STeg".
+    """
+    # set prarmeters
+    if view=="front":
+        ar = 1
+        transform = (0,1,2)
+    elif view=="side":
+        ar = 1/2.5
+        transform = (2,1,0)
+    elif view=="top":
+        ar=2.5
+        transform = (1,0,2)
     
-#     if species=="STeg":
-#         sp_cmp = orange_cmp
-#     elif species=="MMus":
-#         sp_cmp = blue_cmp
+    if species=="STeg":
+        sp_cmp = orange_cmp
+    elif species=="MMus":
+        sp_cmp = blue_cmp
 
-#     # transform/rotate data
-#     omc_image = np.transpose(omc_image, transform)
-#     acc_image = np.transpose(acc_image, transform)
-#     mask_list = [np.transpose(array, transform) for array in mask_list]
+    # transform/rotate data
+    omc_image = np.transpose(omc_image, transform)
+    acc_image = np.transpose(acc_image, transform)
+    mask_list = [np.transpose(array, transform) for array in mask_list]
 
-#     # create outline of max project slice
-#     outline = make_boundaries(plot_areas=masks_to_plot, mask_list=mask_list, roi=roi)
+    # create outline of max project slice
+    outline = make_boundaries(plot_areas=masks_to_plot, mask_list=mask_list, roi=roi)
     
-#     # slice outline
-#     roi_index = areas.index(roi)
-#     roi_mask = mask_list[roi_index]
+    # slice outline
+    roi_index = areas.index(roi)
+    roi_mask = mask_list[roi_index]
 
-#     fig, axs = plt.subplots()
+    fig, axs = plt.subplots()
 
-#     slice_to_contour(omc_image, roi_mask, cmap=green_cmp)
-#     slice_to_contour(acc_image, roi_mask, cmap=purple_cmp)
-#     axs.set_aspect(ar)
-#     axs.axis('off')
-#     plt.imshow(outline, cmap=sp_cmp, aspect=ar)
+    slice_to_contour(omc_image, roi_mask, cmap=green_cmp)
+    slice_to_contour(acc_image, roi_mask, cmap=purple_cmp)
+    axs.set_aspect(ar)
+    axs.axis('off')
+    plt.imshow(outline, cmap=sp_cmp, aspect=ar)
 
-#     return(fig)
+    return(fig)
 
 def plot_contour(images, mask_dict, masks_to_plot, roi=None, 
                  view="front", cmaps=None, ncontours=8, alpha=0.75, gs=3, linewidths=1,
-                 cmap_outline="Greys"):
+                 cmap_outline="Greys", fig_size=None):
     """Plot contour map of max projection of up to 3 images
 
     Args:
@@ -174,6 +174,10 @@ def plot_contour(images, mask_dict, masks_to_plot, roi=None,
 
     fig, axs = plt.subplots()
 
+    if fig_size:
+        fig.set_figwidth(fig_size[0])
+        fig.set_figheight(fig_size[1])
+
     if cmaps:
         colors=cmaps
     else:
@@ -188,89 +192,93 @@ def plot_contour(images, mask_dict, masks_to_plot, roi=None,
             slice_to_contour(im_tr[i], roi_mask, cmap=colors[i], ncontours=ncontours,
                              alpha=alpha, gs=gs, linewidths=linewidths)
 
-    axs.set_aspect(ar)
+    axs.set_aspect(ar) # make sure proper aspect ratio is maintained
     axs.axis('off')
     plt.imshow(outline, cmap=cmap_outline, aspect=ar)
 
     return(fig)
 
 
+def plot_contour_species(mm_image, st_image, mask_dict, plot_areas, roi,
+                          view="front", alpha_mm=0.75, alpha_st=0.75, 
+                          fig_size=None):
+    """Plot contour map of max projection of roi of to compare aligned
+    Singing and lab mouse
 
+    Args:
+        mm_image (np.array): 3D STP images for MMus
+        st_image (np.array): 3D STP images for STeg
+        mask_dict (dict): dictionary of aligned masks where keys are areas,
+                            and values are masks
+        masks_to_plot (list): list of strings specifying the areas to plot in outline, 
+                            and the order the areas should be laid
+        roi (str): Region of interest to apply mask and plot max projection
+        view (str, optional): what view, can be 'front', 'side', or 'top'. Defaults to "front".
+        species (str, optional): Specify species so get correct color for outline. Defaults to "STeg".
+        fig_size (tuple, optional): Tuple of integers for (w,h) of figure in inches. Defautls to None.
+    """
+    # set prarmeters
+    if view=="front":
+        ar = 1
+        transform = (0,1,2)
+    elif view=="side":
+        ar = 1/2.5
+        transform = (2,1,0)
+    elif view=="top":
+        ar=2.5
+        transform = (1,0,2)
 
+    # transform/rotate data
+    st_image = np.transpose(st_image, transform)
+    mm_image = np.transpose(mm_image, transform)
+    mask_transpose = copy.deepcopy(mask_dict)
+    for mask in mask_transpose:
+        mask_transpose[mask] = np.transpose(mask_dict[mask], transform)
 
-# def plot_contour_species(mm_image, st_image, mask_dict, plot_areas, roi,
-#                           view="front", alpha_mm=0.75, alpha_st=0.75):
-#     """Plot contour map of max projection of roi of to compare aligned
-#     Singing and lab mouse
-
-#     Args:
-#         mm_image (np.array): 3D STP images for MMus
-#         st_image (np.array): 3D STP images for STeg
-#         mask_dict (dict): dictionary of aligned masks where keys are areas,
-#                             and values are masks
-#         masks_to_plot (list): list of strings specifying the areas to plot in outline, 
-#                             and the order the areas should be laid
-#         roi (str): Region of interest to apply mask and plot max projection
-#         view (str, optional): what view, can be 'front', 'side', or 'top'. Defaults to "front".
-#         species (str, optional): Specify species so get correct color for outline. Defaults to "STeg".
-#     """
-#     # set prarmeters
-#     if view=="front":
-#         ar = 1
-#         transform = (0,1,2)
-#     elif view=="side":
-#         ar = 1/2.5
-#         transform = (2,1,0)
-#     elif view=="top":
-#         ar=2.5
-#         transform = (1,0,2)
-
-#     # transform/rotate data
-#     st_image = np.transpose(st_image, transform)
-#     mm_image = np.transpose(mm_image, transform)
-#     mask_transpose = copy.deepcopy(mask_dict)
-#     for mask in mask_transpose:
-#         mask_transpose[mask] = np.transpose(mask_dict[mask], transform)
-
-#     # create outline of max project slice
-#     outline = make_boundaries_dict(plot_areas=plot_areas, mask_dict=mask_transpose, roi=roi)
+    # create outline of max project slice
+    outline = make_boundaries_dict(plot_areas=plot_areas, mask_dict=mask_transpose, roi=roi)
     
-#     # slice outline
-#     roi_mask = mask_transpose[roi]
+    # slice outline
+    roi_mask = mask_transpose[roi]
 
-#     fig, axs = plt.subplots()
+    fig, axs = plt.subplots()
 
-#     slice_to_contour(mm_image, roi_mask, cmap=blue_cmp, alpha=alpha_mm)
-#     slice_to_contour(st_image, roi_mask, cmap=orange_cmp, alpha=alpha_st)
-#     axs.set_aspect(ar)
-#     axs.axis('off')
-#     plt.imshow(outline, cmap="Greys", aspect=ar)
+    # set figure size if specified
+    if fig_size:
+        fig.set_figwidth(fig_size[0])
+        fig.set_figheight(fig_size[1])
 
-#     # return(fig)
+    slice_to_contour(mm_image, roi_mask, cmap=blue_cmp, alpha=alpha_mm)
+    slice_to_contour(st_image, roi_mask, cmap=orange_cmp, alpha=alpha_st)
+    axs.set_aspect(ar)
+    axs.axis('off')
+    plt.imshow(outline, cmap="Greys", aspect=ar)
 
-# def dot_bar_plot(df, title="", xaxis="Area", yaxis="Integrated Fluorescence", hueaxis="Species",
-#                  errorbar="se"):
-#     """
-#     Function to take pandas dataframe and plot individual values and mean/sem values
-#     Intent to use for plotting nodes by frequency (in fraction of neurons)
+    # return(fig)
 
-#     Args:
-#         df (pandas.core.frame.DataFrame): pandas dataframe where rows are nodes and columns are:
-#          'Node Degreee', 'Normalized Frequency', 'Species', and 'mouse'
-#          - See output of df_to_nodes
-#         title (str): plot title
-#     """
-#     fig = plt.subplot()
-#     sns.stripplot(df, x=xaxis, y=yaxis, hue=hueaxis, dodge=True, jitter=False, size=3)
-#     t_ax = sns.barplot(df, x=xaxis, y=yaxis, hue=hueaxis, errorbar=errorbar, errwidth=1)
-#     for patch in t_ax.patches:
-#         clr = patch.get_facecolor()
-#         patch.set_edgecolor(clr)
-#         patch.set_facecolor((0,0,0,0))
-#     plt.setp(t_ax.patches, linewidth=1)
-#     plt.title(title, size=18)
+def dot_bar_plot(df, title="", xaxis="Area", yaxis="Integrated Fluorescence", hueaxis="Species",
+                 errorbar="se"):
+    """
+    Function to take pandas dataframe and plot individual values and mean/sem values
+    Intent to use for plotting nodes by frequency (in fraction of neurons)
 
-#     return(fig)
+    Args:
+        df (pandas.core.frame.DataFrame): pandas dataframe where rows are nodes and columns are:
+         'Node Degreee', 'Normalized Frequency', 'Species', and 'mouse'
+         - See output of df_to_nodes
+        title (str): plot title
+    """
+    fig = plt.subplot()
+    sns.stripplot(df, x=xaxis, y=yaxis, hue=hueaxis, dodge=True, jitter=False, size=3)
+    t_ax = sns.barplot(df, x=xaxis, y=yaxis, hue=hueaxis, errorbar=errorbar, errwidth=1)
+    for patch in t_ax.patches:
+        clr = patch.get_facecolor()
+        patch.set_edgecolor(clr)
+        patch.set_facecolor((0,0,0,0))
+    plt.setp(t_ax.patches, linewidth=1)
+    plt.title(title, size=18)
+
+    return(fig)
 
 def stvmm_area_scatter(data, title="", to_plot="Fluorescence", log=True, 
                        err="sem", ax_limits=None, xlabel="Singing Mouse Integrated Fluorescence",
@@ -314,6 +322,11 @@ def stvmm_area_scatter(data, title="", to_plot="Fluorescence", log=True,
     for i in range(len(labels)):
         plt.annotate(labels[i], (st_stats['mean'][i], mm_stats['mean'][i]))
     
+    # get rid of upper and right axes
+    ax = plt.gca()
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
+
     # set x and y lims so that starts at 0,0
     if ax_limits:
         plt.xlim(ax_limits)
@@ -469,6 +482,11 @@ def volcano_plot(df, x="log2_fc", y="nlog10_p", title=None, labels="area", p_05=
     plt.title(title)
     plt.xlabel('$log_{2}$($\dfrac{STeg}{MMus}$)')
     plt.ylabel('$-log_{10}(p\ value)$')
+
+    # get rid of upper and right axes
+    ax = plt.gca()
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
 
     return(fig)
 
