@@ -210,7 +210,7 @@ def plot_contour_species(mm_image, st_image, mask_dict, plot_areas, roi,
         st_image (np.array): 3D STP images for STeg
         mask_dict (dict): dictionary of aligned masks where keys are areas,
                             and values are masks
-        masks_to_plot (list): list of strings specifying the areas to plot in outline, 
+        plot_areas (list): list of strings specifying the areas to plot in outline, 
                             and the order the areas should be laid
         roi (str): Region of interest to apply mask and plot max projection
         view (str, optional): what view, can be 'front', 'side', or 'top'. Defaults to "front".
