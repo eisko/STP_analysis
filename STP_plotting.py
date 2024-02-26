@@ -431,7 +431,7 @@ def area_scatter(data, title="", to_plot="Fluorescence", log=True,
     return(fig)
 
 def volcano_plot(df, x="log2_fc", y="nlog10_p", title=None, labels="area", p_05=True, 
-                 p_01=True, p_bf=None, xlim=None, ylim=None):
+                 p_01=True, p_bf=None, xlim=None, ylim=None, fig_size=(4,4)):
     """output volcano plot based on comparison of species proportional means
 
     Args:
@@ -457,7 +457,7 @@ def volcano_plot(df, x="log2_fc", y="nlog10_p", title=None, labels="area", p_05=
     if xlim:
         plt.xlim(xlim)
     if ylim:
-        plt.ylim([-0.1,4])
+        plt.ylim(ylim)
     # plot 0 axes
     plt.axline((0, 0), (0, 1),linestyle='--', linewidth=0.5)
     plt.axline((0, 0), (1, 0),linestyle='--', linewidth=0.5)
@@ -487,6 +487,11 @@ def volcano_plot(df, x="log2_fc", y="nlog10_p", title=None, labels="area", p_05=
     ax = plt.gca()
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
+
+    # set figure size
+    fig = plt.gcf()
+    fig.set_size_inches(fig_size[0],fig_size[1])
+
 
     return(fig)
 
