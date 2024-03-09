@@ -4,11 +4,11 @@
 
 # make sure to `conda activate brainglobe` before running
 
-straight_brain="STeg_220429"
+straight_brain="STeg_220208"
 
 # Replace 'your_csv_file.csv' with the actual filename of your CSV file
 csv_file="/mnt/labNAS/Emily/STP_for_MAPseq/processed_data/file_path.csv"
-orientation='als'
+orientation='asr'
 out_folder="/mnt/labNAS/Emily/STP_for_MAPseq/3_brainreg_output/${straight_brain}_aligned"
 
 # Check if the CSV file exists
