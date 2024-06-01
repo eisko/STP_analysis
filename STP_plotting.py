@@ -16,7 +16,7 @@ areas = ["grey", "CTX", "OMCc", "ACAc", "aud","TH", "STR", "CP", "AMY", "P", "PG
 
 
 def slice_to_contour(stp_image, mask, slice_range=None, slice=None, output="contour", gs=3, cmap=green_cmp,
-                     alpha=0.75, ncontours=8, linewidths=1):
+                     alpha=0.75, ncontours=8, linewidths=1, fill=False):
     """_summary_
 
     Args:
@@ -30,6 +30,7 @@ def slice_to_contour(stp_image, mask, slice_range=None, slice=None, output="cont
         cmap (cmap, optional): Colormap to use to determine contour colors. Defaults to custum greeen_cmp.
         alpha (float, optional): Opacity value for contour lines. Defaults to 0.75.
         ncontours (int, optional): Number of contour lines to draw. Defaults to 8 (plt.contour default is 8).
+        fill (bool, optional): Whether to plot outlines or filled contours. Defaults to False.
     """
 
     # apply mask to stp_image
@@ -55,7 +56,14 @@ def slice_to_contour(stp_image, mask, slice_range=None, slice=None, output="cont
         return(blur)
     
     # else return controur plot
-    contour = plt.contour(blur, ncontours, cmap=cmap, alpha=alpha, linewidths=linewidths)
+    if fill:
+        contour = plt.contourf(blur, ncontours, cmap=cmap, 
+                               alpha=alpha, linewidths=linewidths,
+                               origin="image")
+    else:
+        contour = plt.contour(blur, ncontours, cmap=cmap, 
+                              alpha=alpha, linewidths=linewidths,
+                              origin="image")
     # ax.set_aspect(ar)
     # ax.axis('off')
 
@@ -115,7 +123,7 @@ def plot_contour_omc_acc(omc_image, acc_image, mask_list, masks_to_plot, roi,
 
 def plot_contour(images, mask_dict, masks_to_plot, roi=None, 
                  view="front", cmaps=None, ncontours=8, alpha=0.75, gs=3, linewidths=1,
-                 cmap_outline="Greys", fig_size=None):
+                 cmap_outline="gray_r", fig_size=None, plot_fill=False, ref_fill=False):
     """Plot contour map of max projection of up to 3 images
 
     Args:
@@ -169,7 +177,8 @@ def plot_contour(images, mask_dict, masks_to_plot, roi=None,
 
     # create outline of max project slice
     # outline = make_boundaries_dict(plot_areas=masks_to_plot, mask_dict=mask_tr, roi="roi_plot")
-    outline = make_boundaries_dict(plot_areas=masks_to_plot, mask_dict=mask_tr)
+    outline, fill = make_boundaries_dict(plot_areas=masks_to_plot, mask_dict=mask_tr,
+                                   scaling_factor=1, return_fill=True)
 
 
     fig, axs = plt.subplots()
@@ -178,6 +187,7 @@ def plot_contour(images, mask_dict, masks_to_plot, roi=None,
         fig.set_figwidth(fig_size[0])
         fig.set_figheight(fig_size[1])
 
+    
     if cmaps:
         colors=cmaps
     else:
@@ -186,16 +196,23 @@ def plot_contour(images, mask_dict, masks_to_plot, roi=None,
     if type(roi_mask)==list:
         for i in range(len(images)):
             slice_to_contour(im_tr[i], roi_mask[i], cmap=colors[i], ncontours=ncontours,
-                             alpha=alpha, gs=gs, linewidths=linewidths)
+                             alpha=alpha, gs=gs, linewidths=linewidths, fill=plot_fill)
     elif images:
         for i in range(len(images)):
             slice_to_contour(im_tr[i], roi_mask, cmap=colors[i], ncontours=ncontours,
-                             alpha=alpha, gs=gs, linewidths=linewidths)
+                             alpha=alpha, gs=gs, linewidths=linewidths, fill=plot_fill)
 
     axs.set_aspect(ar) # make sure proper aspect ratio is maintained
     axs.axis('off')
-    plt.imshow(outline, cmap=cmap_outline, aspect=ar)
 
+    # plot reference so that it's editable
+    if ref_fill:
+        plt.contourf(fill, origin="image", vmin=0, vmax=10, cmap=cmap_outline, alpha=1)
+    else:
+        plt.contour(outline, origin="image", vmin=0, vmax=0.1, cmap=cmap_outline, 
+                    alpha=0.5, linewidths=0.5)
+
+    
     return(fig)
 
 

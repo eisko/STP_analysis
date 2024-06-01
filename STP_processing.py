@@ -161,7 +161,8 @@ def make_boundaries(plot_areas, mask_list, mask_list_order=areas, roi=None, slic
     return(boundaries_scaled)
 
 def make_boundaries_dict(plot_areas, mask_dict, roi=None, slice=None, 
-                         scaling_factor=1000, boundary_mode="thick", view="front"):
+                         scaling_factor=1000, boundary_mode="thick", view="front",
+                         return_fill=False):
     """_summary_
 
     Args:
@@ -242,7 +243,10 @@ def make_boundaries_dict(plot_areas, mask_dict, roi=None, slice=None,
     boundaries_scaled = boundaries * scaling_factor
 
 
-    return(boundaries_scaled)
+    if return_fill:
+        return(boundaries_scaled, mask_final)
+    else:
+        return(boundaries_scaled)
 
 
 
